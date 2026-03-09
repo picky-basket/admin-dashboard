@@ -45,12 +45,12 @@ const INIT_PRODUCTS = [
 ];
 
 const INIT_ORDERS = [
-  { id:"#PB-4825",customer:"Akosua Mensah",  phone:"0241112222",address:"12 Cantonments Rd",items:[{name:"Fresh Tilapia",qty:1,price:45},{name:"Asparagus",qty:2,price:12}],total:69, fee:15,status:"Pending",  time:"5 min ago",  paid:true,  payMethod:"MTN MoMo",   courier:null },
-  { id:"#PB-4824",customer:"Kwame Asante",   phone:"0203334444",address:"45 Airport Res.",  items:[{name:"Long Grain Rice",qty:3,price:8}],                                  total:24, fee:12,status:"Packing",  time:"18 min ago", paid:true,  payMethod:"Card",       courier:"Esi Boateng" },
-  { id:"#PB-4823",customer:"Ama Boateng",    phone:"0275556666",address:"8 Osu Rd",         items:[{name:"Free Range Eggs",qty:2,price:18},{name:"Ginger",qty:1,price:6}],   total:42, fee:10,status:"Delivering",time:"35 min ago", paid:true,  payMethod:"MTN MoMo",   courier:"Kofi Asante" },
-  { id:"#PB-4822",customer:"Yaw Darko",      phone:"0557778888",address:"22 Labone St",     items:[{name:"Scotch Bonnet",qty:2,price:4}],                                    total:8,  fee:12,status:"Delivered", time:"1 hr ago",   paid:true,  payMethod:"Vodafone",   courier:"Kojo Mensah" },
-  { id:"#PB-4821",customer:"Abena Frimpong", phone:"0309990000",address:"5 Ring Rd",        items:[{name:"Chicken Thighs",qty:2,price:35}],                                  total:70, fee:18,status:"Delivered", time:"2 hr ago",   paid:true,  payMethod:"Card",       courier:"Esi Boateng" },
-  { id:"#PB-4820",customer:"Nana Agyei",     phone:"0241231231",address:"17 Tema Rd",       items:[{name:"Organic Mango",qty:3,price:15}],                                   total:45, fee:15,status:"Cancelled", time:"3 hr ago",   paid:false, payMethod:"MTN MoMo",   courier:null },
+  { id:"#PB-4825",customer:"Akosua Mensah",  phone:"0241112222",address:"12 Cantonments Rd",items:[{name:"Fresh Tilapia",qty:1,price:45},{name:"Asparagus",qty:2,price:12}],total:69, fee:15,status:"Pending",   time:"5 min ago",  paid:true,  payMethod:"MTN MoMo" },
+  { id:"#PB-4824",customer:"Kwame Asante",   phone:"0203334444",address:"45 Airport Res.",  items:[{name:"Long Grain Rice",qty:3,price:8}],                                  total:24, fee:12,status:"Packing",   time:"18 min ago", paid:true,  payMethod:"Card" },
+  { id:"#PB-4823",customer:"Ama Boateng",    phone:"0275556666",address:"8 Osu Rd",         items:[{name:"Free Range Eggs",qty:2,price:18},{name:"Ginger",qty:1,price:6}],   total:42, fee:10,status:"Delivering",time:"35 min ago", paid:true,  payMethod:"MTN MoMo" },
+  { id:"#PB-4822",customer:"Yaw Darko",      phone:"0557778888",address:"22 Labone St",     items:[{name:"Scotch Bonnet",qty:2,price:4}],                                    total:8,  fee:12,status:"Delivered", time:"1 hr ago",   paid:true,  payMethod:"Vodafone" },
+  { id:"#PB-4821",customer:"Abena Frimpong", phone:"0309990000",address:"5 Ring Rd",        items:[{name:"Chicken Thighs",qty:2,price:35}],                                  total:70, fee:18,status:"Delivered", time:"2 hr ago",   paid:true,  payMethod:"Card" },
+  { id:"#PB-4820",customer:"Nana Agyei",     phone:"0241231231",address:"17 Tema Rd",       items:[{name:"Organic Mango",qty:3,price:15}],                                   total:45, fee:15,status:"Cancelled", time:"3 hr ago",   paid:false, payMethod:"MTN MoMo" },
 ];
 
 const INIT_PAYMENTS = [
@@ -64,15 +64,12 @@ const INIT_PAYMENTS = [
 
 // Users who have logged into/registered on the app
 const INIT_USERS = [
-  { id:1, name:"Akosua Mensah",  email:"akosua@email.com",  phone:"0241112222",role:"Customer",  status:"Active",  lastLogin:"2 min ago",  orders:14, spent:842,  joined:"Jan 2024", device:"iPhone 14",   location:"Cantonments" },
-  { id:2, name:"Kwame Asante",   email:"kwame@email.com",   phone:"0203334444",role:"Customer",  status:"Active",  lastLogin:"18 min ago", orders:7,  spent:390,  joined:"Mar 2024", device:"Samsung S23", location:"Airport Res." },
-  { id:3, name:"Ama Boateng",    email:"ama@email.com",     phone:"0275556666",role:"Customer",  status:"Active",  lastLogin:"1 hr ago",   orders:22, spent:1430, joined:"Nov 2023", device:"iPhone 13",   location:"Osu" },
-  { id:4, name:"Yaw Darko",      email:"yaw@email.com",     phone:"0557778888",role:"Customer",  status:"Inactive",lastLogin:"3 days ago", orders:3,  spent:120,  joined:"Feb 2024", device:"Tecno Camon", location:"Labone" },
-  { id:5, name:"Abena Frimpong", email:"abena@email.com",   phone:"0309990000",role:"Customer",  status:"Active",  lastLogin:"2 hr ago",   orders:18, spent:980,  joined:"Dec 2023", device:"iPhone 12",   location:"East Legon" },
-  { id:6, name:"Kofi Asante",    email:"kofi@courier.gh",   phone:"0201234567",role:"Courier",   status:"Active",  lastLogin:"35 min ago", orders:124,spent:0,    joined:"Jan 2024", device:"Samsung A54", location:"Cantonments" },
-  { id:7, name:"Esi Boateng",    email:"esi@courier.gh",    phone:"0242345678",role:"Courier",   status:"Active",  lastLogin:"20 min ago", orders:231,spent:0,    joined:"Feb 2024", device:"iPhone SE",   location:"Airport Res." },
-  { id:8, name:"Kojo Mensah",    email:"kojo@courier.gh",   phone:"0273456789",role:"Courier",   status:"Active",  lastLogin:"5 hr ago",   orders:88, spent:0,    joined:"Mar 2024", device:"Tecno Spark", location:"East Legon" },
-  { id:9, name:"Admin",          email:"admin@pickybasket.com",phone:"0300000001",role:"Admin", status:"Active",  lastLogin:"Just now",   orders:0,  spent:0,    joined:"Jan 2024", device:"MacBook Pro",  location:"Accra, GH" },
+  { id:1, name:"Akosua Mensah",  email:"akosua@email.com",  phone:"0241112222",role:"Customer",status:"Active",  lastLogin:"2 min ago",  orders:14, spent:842,  joined:"Jan 2024", device:"iPhone 14",   location:"Cantonments" },
+  { id:2, name:"Kwame Asante",   email:"kwame@email.com",   phone:"0203334444",role:"Customer",status:"Active",  lastLogin:"18 min ago", orders:7,  spent:390,  joined:"Mar 2024", device:"Samsung S23", location:"Airport Res." },
+  { id:3, name:"Ama Boateng",    email:"ama@email.com",     phone:"0275556666",role:"Customer",status:"Active",  lastLogin:"1 hr ago",   orders:22, spent:1430, joined:"Nov 2023", device:"iPhone 13",   location:"Osu" },
+  { id:4, name:"Yaw Darko",      email:"yaw@email.com",     phone:"0557778888",role:"Customer",status:"Inactive",lastLogin:"3 days ago", orders:3,  spent:120,  joined:"Feb 2024", device:"Tecno Camon", location:"Labone" },
+  { id:5, name:"Abena Frimpong", email:"abena@email.com",   phone:"0309990000",role:"Customer",status:"Active",  lastLogin:"2 hr ago",   orders:18, spent:980,  joined:"Dec 2023", device:"iPhone 12",   location:"East Legon" },
+  { id:6, name:"Admin",          email:"admin@pickybasket.com",phone:"0300000001",role:"Admin",status:"Active",  lastLogin:"Just now",   orders:0,  spent:0,    joined:"Jan 2024", device:"MacBook Pro",  location:"Accra, GH" },
 ];
 
 const UNITS = ["kg","g","bundle","pack","pcs","punnet","litre","dozen","box","sachet","500g","250g"];
@@ -159,7 +156,7 @@ const NAV = [
   {key:"categories",icon:"🗂️", label:"Categories"},
   {key:"products",  icon:"🛒", label:"Products"},
   {key:"payments",  icon:"💰", label:"Payments"},
-  {key:"users",     icon:"👥", label:"Users & Logins"},
+  {key:"users",     icon:"👥", label:"Customers"},
   {key:"settings",  icon:"⚙️", label:"Settings"},
 ];
 
@@ -208,7 +205,7 @@ function Sidebar({active,setActive,pendingOrders}) {
 function Dashboard({orders,products,payments,users}) {
   const todayRevenue = payments.filter(p=>p.status==="Settled").reduce((s,p)=>s+p.amount,0);
   const pending = orders.filter(o=>o.status==="Pending").length;
-  const activeUsers = users.filter(u=>u.status==="Active" && u.role==="Customer").length;
+  const activeUsers = users.filter(u=>u.role==="Customer" && u.status==="Active").length;
   const lowStock = products.filter(p=>p.status==="Low Stock"||p.status==="Out of Stock").length;
   const recentOrders = [...orders].slice(0,5);
 
@@ -265,12 +262,12 @@ function Dashboard({orders,products,payments,users}) {
           ))}
         </Card>
         <Card>
-          <div style={{fontSize:14,fontWeight:700,color:T.text,marginBottom:14}}>User Roles Online Now</div>
-          {[["Customers",users.filter(u=>u.role==="Customer"&&u.status==="Active").length,T.blue],["Couriers",users.filter(u=>u.role==="Courier"&&u.status==="Active").length,T.purple],["Admin",1,T.teal]].map(([r,n,c])=>(
+          <div style={{fontSize:14,fontWeight:700,color:T.text,marginBottom:14}}>Customers Overview</div>
+          {[["Active",users.filter(u=>u.role==="Customer"&&u.status==="Active").length,T.green],["Inactive",users.filter(u=>u.role==="Customer"&&u.status==="Inactive").length,T.muted],["Total",users.filter(u=>u.role==="Customer").length,T.teal]].map(([r,n,c])=>(
             <div key={r} style={{display:"flex",alignItems:"center",gap:12,padding:"8px 0",borderBottom:`1px solid ${T.border}`}}>
               <div style={{width:10,height:10,borderRadius:"50%",background:c,flexShrink:0}}/>
               <span style={{flex:1,fontSize:13,color:T.text}}>{r}</span>
-              <span style={{fontSize:13,fontWeight:700,color:T.text}}>{n} active</span>
+              <span style={{fontSize:13,fontWeight:700,color:T.text}}>{n} customers</span>
             </div>
           ))}
         </Card>
@@ -310,7 +307,7 @@ function Orders({orders,setOrders}) {
         <table style={{width:"100%",borderCollapse:"collapse",fontSize:13}}>
           <thead>
             <tr style={{background:T.bg}}>
-              {["Order ID","Customer","Items","Total+Fee","Status","Paid Via","Courier","Action"].map(h=>(
+              {["Order ID","Customer","Items","Total+Fee","Status","Paid Via","Action"].map(h=>(
                 <th key={h} style={{padding:"10px 14px",textAlign:"left",fontSize:11,color:T.muted,fontWeight:600,textTransform:"uppercase",letterSpacing:0.5}}>{h}</th>
               ))}
             </tr>
@@ -330,7 +327,6 @@ function Orders({orders,setOrders}) {
                   <div style={{fontSize:11}}>{o.payMethod}</div>
                   <div style={{fontSize:10,color:o.paid?T.green:T.red,fontWeight:700}}>{o.paid?"✓ Paid":"✗ Unpaid"}</div>
                 </td>
-                <td style={{padding:"10px 14px",color:T.muted,fontSize:12}}>{o.courier||"—"}</td>
                 <td style={{padding:"10px 14px"}}>
                   <Btn sm onClick={()=>setDetail(o)}>View</Btn>
                 </td>
@@ -346,8 +342,7 @@ function Orders({orders,setOrders}) {
             <div><div style={{fontSize:11,color:T.muted,fontWeight:600,marginBottom:3}}>CUSTOMER</div><div style={{fontWeight:700}}>{detail.customer}</div><div style={{fontSize:12,color:T.muted}}>{detail.phone}</div></div>
             <div><div style={{fontSize:11,color:T.muted,fontWeight:600,marginBottom:3}}>DELIVERY ADDRESS</div><div style={{fontSize:13}}>{detail.address}</div></div>
             <div><div style={{fontSize:11,color:T.muted,fontWeight:600,marginBottom:3}}>STATUS</div><Pill s={detail.status}/></div>
-            <div><div style={{fontSize:11,color:T.muted,fontWeight:600,marginBottom:3}}>PAYMENT</div><div style={{fontSize:13,fontWeight:600,color:detail.paid?T.green:T.red}}>{detail.paid?"✓ Paid":  "✗ Unpaid"} · {detail.payMethod}</div></div>
-          </div>
+            <div><div style={{fontSize:11,color:T.muted,fontWeight:600,marginBottom:3}}>PAYMENT</div><div style={{fontSize:13,fontWeight:600,color:detail.paid?T.green:T.red}}>{detail.paid?"✓ Paid":  "✗ Unpaid"} · {detail.payMethod}</div></div>          </div>
           <div style={{background:T.bg,borderRadius:10,padding:14,marginBottom:16}}>
             <div style={{fontSize:12,fontWeight:600,color:T.muted,marginBottom:10,textTransform:"uppercase",letterSpacing:0.5}}>Items</div>
             {detail.items.map((item,i)=>(
@@ -659,21 +654,20 @@ function Users({users,setUsers}) {
   return (
     <div style={{display:"flex",flexDirection:"column",gap:20}}>
       <div>
-        <h2 style={{fontSize:22,fontWeight:800,color:T.text,marginBottom:4}}>Users & Logins</h2>
+        <h2 style={{fontSize:22,fontWeight:800,color:T.text,marginBottom:4}}>Customers</h2>
         <p style={{color:T.muted,fontSize:13}}>Everyone who has an account on the Picky Basket app</p>
       </div>
 
-      <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:14}}>
-        <StatCard label="Total Users"    value={users.length}                             sub="All accounts"      color={T.teal}   icon="👥"/>
-        <StatCard label="Customers"      value={users.filter(u=>u.role==="Customer").length} sub="Registered"     color={T.blue}   icon="🛒"/>
-        <StatCard label="Couriers"       value={users.filter(u=>u.role==="Courier").length}  sub="On the team"    color={T.purple} icon="🛵"/>
-        <StatCard label="Active Now"     value={users.filter(u=>u.status==="Active").length} sub="Within 24hrs"   color={T.green}  icon="🟢"/>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:14}}>
+        <StatCard label="Total Customers" value={users.filter(u=>u.role==="Customer").length} sub="Registered accounts" color={T.teal}   icon="👥"/>
+        <StatCard label="Active"          value={users.filter(u=>u.role==="Customer"&&u.status==="Active").length} sub="Within 24hrs" color={T.green}  icon="🟢"/>
+        <StatCard label="Inactive"        value={users.filter(u=>u.role==="Customer"&&u.status==="Inactive").length} sub="Haven't ordered recently" color={T.muted} icon="😴"/>
       </div>
 
       {/* Filters & Search */}
       <div style={{display:"flex",gap:10,alignItems:"center",flexWrap:"wrap"}}>
         <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search name or email…" style={{flex:1,minWidth:200,padding:"9px 14px",borderRadius:10,border:`1.5px solid ${T.border}`,fontSize:13,background:T.white,outline:"none",fontFamily:"inherit"}}/>
-        {["All","Customer","Courier","Active","Inactive"].map(f=>(
+        {["All","Active","Inactive"].map(f=>(
           <button key={f} onClick={()=>setFilter(f)} style={{padding:"7px 14px",borderRadius:20,border:`1.5px solid ${filter===f?T.teal:T.border}`,background:filter===f?T.teal:T.white,color:filter===f?T.white:T.muted,fontSize:12,cursor:"pointer",fontFamily:"inherit",fontWeight:filter===f?700:400}}>{f}</button>
         ))}
       </div>
@@ -682,7 +676,7 @@ function Users({users,setUsers}) {
         <table style={{width:"100%",borderCollapse:"collapse",fontSize:13}}>
           <thead>
             <tr style={{background:T.bg}}>
-              {["User","Role","Status","Last Login","Device","Location","Orders / Spent","Actions"].map(h=>(
+              {["Customer","Last Login","Device","Location","Orders / Spent","Actions"].map(h=>(
                 <th key={h} style={{padding:"10px 14px",textAlign:"left",fontSize:11,color:T.muted,fontWeight:600,textTransform:"uppercase",letterSpacing:0.5}}>{h}</th>
               ))}
             </tr>
@@ -699,15 +693,13 @@ function Users({users,setUsers}) {
                     </div>
                   </div>
                 </td>
-                <td style={{padding:"10px 14px"}}><Pill s={u.role}/></td>
                 <td style={{padding:"10px 14px"}}><Pill s={u.status}/></td>
                 <td style={{padding:"10px 14px",color:T.muted,fontSize:12}}>{u.lastLogin}</td>
                 <td style={{padding:"10px 14px",color:T.muted,fontSize:12}}>{u.device}</td>
                 <td style={{padding:"10px 14px",color:T.muted,fontSize:12}}>{u.location}</td>
                 <td style={{padding:"10px 14px"}}>
-                  {u.role==="Customer" ? <div><div style={{fontWeight:700,fontSize:13}}>{u.orders} orders</div><div style={{fontSize:11,color:T.teal}}>₵{u.spent} spent</div></div>
-                    : u.role==="Courier" ? <div><div style={{fontWeight:700,fontSize:13}}>{u.orders} deliveries</div></div>
-                    : <div style={{fontSize:12,color:T.muted}}>—</div>}
+                  <div style={{fontWeight:700,fontSize:13}}>{u.orders} orders</div>
+                  <div style={{fontSize:11,color:T.teal}}>₵{u.spent} spent</div>
                 </td>
                 <td style={{padding:"10px 14px"}}>
                   <div style={{display:"flex",gap:6}}>
@@ -727,18 +719,17 @@ function Users({users,setUsers}) {
             <div style={{width:64,height:64,borderRadius:18,background:T.tealLt,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700,fontSize:22,color:T.teal,margin:"0 auto 12px"}}>{detail.name.split(" ").map(n=>n[0]).join("").slice(0,2)}</div>
             <div style={{fontSize:18,fontWeight:800,color:T.text}}>{detail.name}</div>
             <div style={{fontSize:13,color:T.muted}}>{detail.email}</div>
-            <div style={{marginTop:8,display:"flex",justifyContent:"center",gap:8}}><Pill s={detail.role}/><Pill s={detail.status}/></div>
+            <div style={{marginTop:8,display:"flex",justifyContent:"center",gap:8}}><Pill s={detail.status}/></div>
           </div>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:16}}>
-            {[["Phone",detail.phone],["Joined",detail.joined],["Last Login",detail.lastLogin],["Device",detail.device],["Location",detail.location],[detail.role==="Customer"?"Total Orders":detail.role==="Courier"?"Deliveries":"Orders",detail.orders],[detail.role==="Customer"?"Total Spent":"—",detail.role==="Customer"?`₵${detail.spent}`:"—"]].map(([l,v])=>(
+            {[["Phone",detail.phone],["Joined",detail.joined],["Last Login",detail.lastLogin],["Device",detail.device],["Location",detail.location],["Total Orders",detail.orders],["Total Spent",`₵${detail.spent}`]].map(([l,v])=>(
               <div key={l} style={{background:T.bg,borderRadius:10,padding:"10px 14px"}}>
                 <div style={{fontSize:11,color:T.muted,fontWeight:600,marginBottom:2,textTransform:"uppercase",letterSpacing:0.5}}>{l}</div>
                 <div style={{fontSize:13,fontWeight:700,color:T.text}}>{v}</div>
               </div>
             ))}
           </div>
-          {detail.role!=="Admin" && (
-            <Btn full variant={detail.status==="Active"?"danger":"primary"} onClick={()=>{toggleStatus(detail.id);setDetail(null);}}>
+          {detail.role!=="Admin" && (            <Btn full variant={detail.status==="Active"?"danger":"primary"} onClick={()=>{toggleStatus(detail.id);setDetail(null);}}>
               {detail.status==="Active"?"Suspend This User":"Activate This User"}
             </Btn>
           )}
