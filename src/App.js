@@ -1,5 +1,13 @@
 import { useState, useRef, useMemo, createContext, useContext } from "react";
+import logo from './logo.png';
+```
 
+---
+
+**STEP 3 — Find this block in the code**
+Press **Ctrl + F** to open search and paste this:
+```
+fontSize:34,margin:"0 auto 12px"
 // ── Theme Tokens ───────────────────────────────────────────────
 const LIGHT = {
   teal:"#2A9D8F", tealDk:"#1f7a6e", tealLt:"#e0f5f3",
@@ -37,10 +45,15 @@ const readFile = (f) =>
   });
 
 // ── Logo SVG (replaces heavy base64 images) ────────────────────
-<img src={logo} alt="Picky Basket"
+function LogoMark({ size = 34 }) {
+  const T = useT();
+  return (
+    <img src={logo} alt="Picky Basket"
   style={{ width:68, height:68, borderRadius:20,
     margin:"0 auto 12px", display:"block",
     objectFit:"contain" }} />
+  );
+}
 
 // ── Seed Data ──────────────────────────────────────────────────
 const SEED_CATS = [
@@ -1230,7 +1243,8 @@ function Login({ onLogin, dark }) {
       <div style={{ background:T.card, borderRadius:22, padding:"38px 34px", width:"100%", maxWidth:400, boxShadow:"0 32px 80px rgba(0,0,0,.5)", border:`1px solid ${T.border}` }}>
         <div style={{ textAlign:"center", marginBottom:28 }}>
           <div style={{ display:"flex", justifyContent:"center", marginBottom:14 }}>
-<img src={logo} alt="Picky Basket" style={{ width:68, height:68, borderRadius:20, margin:"0 auto 12px", display:"block", objectFit:"contain" }} />          </div>
+            <div style={{ width:60, height:60, borderRadius:18, background:T.tealLt, display:"flex", alignItems:"center", justifyContent:"center", fontSize:30, border:`2px solid ${T.teal}44` }}>🧺</div>
+          </div>
           <div style={{ fontSize:24, fontWeight:800, color:T.text, letterSpacing:-.5 }}>Picky Basket</div>
           <div style={{ fontSize:13, color:T.muted, marginTop:3, fontWeight:500 }}>Admin Portal</div>
         </div>
