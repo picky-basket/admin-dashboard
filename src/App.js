@@ -38,18 +38,17 @@ const readFile = (f) =>
 
 // ── Logo SVG (replaces heavy base64 images) ────────────────────
 function LogoMark({ size = 34 }) {
-  const T = useT();
   return (
-    <div
-      style={{
-        width: size, height: size, borderRadius: 10,
-        background: T.teal, flexShrink: 0,
-        display: "flex", alignItems: "center", justifyContent: "center",
-        fontSize: size * 0.5, color: "#fff", fontWeight: 800,
+    <img
+      src="/logo.png"
+      alt="Picky Basket Logo"
+      style={{ 
+        width: size, 
+        height: size, 
+        borderRadius: 10,
+        objectFit: "contain"
       }}
-    >
-      🧺
-    </div>
+    />
   );
 }
 
