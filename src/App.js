@@ -37,21 +37,10 @@ const readFile = (f) =>
   });
 
 // ── Logo SVG (replaces heavy base64 images) ────────────────────
-function LogoMark({ size = 34 }) {
-  const T = useT();
-  return (
-    <div
-      style={{
-        width: size, height: size, borderRadius: 10,
-        background: T.teal, flexShrink: 0,
-        display: "flex", alignItems: "center", justifyContent: "center",
-        fontSize: size * 0.5, color: "#fff", fontWeight: 800,
-      }}
-    >
-      🧺
-    </div>
-  );
-}
+<img src={logo} alt="Picky Basket"
+  style={{ width:68, height:68, borderRadius:20,
+    margin:"0 auto 12px", display:"block",
+    objectFit:"contain" }} />
 
 // ── Seed Data ──────────────────────────────────────────────────
 const SEED_CATS = [
