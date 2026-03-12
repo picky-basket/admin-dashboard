@@ -48,7 +48,7 @@ const readFile = (f) =>
 function LogoMark({ size = 34 }) {
   const T = useT();
   return (
-    <img src={logo} alt="Picky Basket"
+    <img src={logo.png} alt="Picky Basket"
   style={{ width:68, height:68, borderRadius:20,
     margin:"0 auto 12px", display:"block",
     objectFit:"contain" }} />
