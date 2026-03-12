@@ -2,8 +2,6 @@ import { useState, useRef } from "react";
 import logo from './logo.png';
 ```
 
----
-
 **STEP 3 — Find this block in the code**
 Press **Ctrl + F** to open search and paste this:
 ```
