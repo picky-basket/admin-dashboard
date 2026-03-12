@@ -38,17 +38,18 @@ const readFile = (f) =>
 
 // ── Logo SVG (replaces heavy base64 images) ────────────────────
 function LogoMark({ size = 34 }) {
+  const T = useT();
   return (
-    <img
-      src="/logo.png"
-      alt="Picky Basket Logo"
-      style={{ 
-        width: size, 
-        height: size, 
-        borderRadius: 10,
-        objectFit: "contain"
+    <div
+      style={{
+        width: size, height: size, borderRadius: 10,
+        background: T.teal, flexShrink: 0,
+        display: "flex", alignItems: "center", justifyContent: "center",
+        fontSize: size * 0.5, color: "#fff", fontWeight: 800,
       }}
-    />
+    >
+      🧺
+    </div>
   );
 }
 
@@ -1240,8 +1241,7 @@ function Login({ onLogin, dark }) {
       <div style={{ background:T.card, borderRadius:22, padding:"38px 34px", width:"100%", maxWidth:400, boxShadow:"0 32px 80px rgba(0,0,0,.5)", border:`1px solid ${T.border}` }}>
         <div style={{ textAlign:"center", marginBottom:28 }}>
           <div style={{ display:"flex", justifyContent:"center", marginBottom:14 }}>
-            <div style={{ width:60, height:60, borderRadius:18, background:T.tealLt, display:"flex", alignItems:"center", justifyContent:"center", fontSize:30, border:`2px solid ${T.teal}44` }}>🧺</div>
-          </div>
+<img src={logo} alt="Picky Basket" style={{ width:68, height:68, borderRadius:20, margin:"0 auto 12px", display:"block", objectFit:"contain" }} />          </div>
           <div style={{ fontSize:24, fontWeight:800, color:T.text, letterSpacing:-.5 }}>Picky Basket</div>
           <div style={{ fontSize:13, color:T.muted, marginTop:3, fontWeight:500 }}>Admin Portal</div>
         </div>
