@@ -1,0 +1,1506 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "FastAPI",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "Root",
+        "operationId": "root__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/cart": {
+      "get": {
+        "tags": ["Cart"],
+        "summary": "Get Cart",
+        "operationId": "get_cart_api_v1_cart_get",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "Cart Retrieved": {
+                    "value": {
+                      "status": "Success",
+                      "message": "Cart retrieved successfully.",
+                      "data": {
+                        "cartId": "nzMn1GjJzYbJZdz0dsyiInnmLkL2",
+                        "itemCount": 1,
+                        "totalAmount": 100,
+                        "currency": "GHS",
+                        "items": [
+                          {
+                            "quantity": 1,
+                            "addedAt": "2026-03-23T16:30:43.911397+00:00",
+                            "totalPrice": 100,
+                            "imageUrl": "https://storage.googleapis.com/picky-basket.firebasestorage.app/uploads/products/2d982139-65c7-462f-8df1-8bf2652d34e5",
+                            "productId": "6YUZmN3n4hCyrILAGMtZ",
+                            "currency": "GHS",
+                            "productName": "Chicken Thighs",
+                            "unit": "kg",
+                            "unitPrice": 100
+                          }
+                        ],
+                        "expiresAt": "2026-03-24T16:30:43.911397+00:00",
+                        "status": "active",
+                        "unavailableItems": [],
+                        "hasUnavailableItems": false
+                      }
+                    }
+                  },
+                  "Cart Empty": {
+                    "value": {
+                      "status": "Success",
+                      "message": "Cart is empty.",
+                      "data": {
+                        "cartId": "nzMn1GjJzYbJZdz0dsyiInnmLkL2",
+                        "itemCount": 0,
+                        "totalAmount": 0,
+                        "items": []
+                      }
+                    }
+                  },
+                  "Cart Expired": {
+                    "value": {
+                      "status": "Success",
+                      "message": "Cart has expired. Please add items again.",
+                      "data": {
+                        "cartId": "nzMn1GjJzYbJZdz0dsyiInnmLkL2",
+                        "itemCount": 0,
+                        "totalAmount": 0,
+                        "items": [],
+                        "expiresAt": "2026-03-23T16:30:43+00:00"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "Unauthorized": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Invalid credentials."
+                    }
+                  },
+                  "Expired Token": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Refresh token is invalid or expired."
+                    }
+                  },
+                  "Not authenticated": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Not authenticated"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": "Failed",
+                  "message": "Access denied."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": "Failed",
+                  "message": "Failed to retrieve cart."
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/cart/add": {
+      "post": {
+        "tags": ["Cart"],
+        "summary": "Add To Cart",
+        "operationId": "add_to_cart_api_v1_cart_add_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddToCartRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "Cart item added": {
+                    "value": {
+                      "status": "Success",
+                      "message": "Item added to cart successfully.",
+                      "data": {
+                        "cartId": "nzMn1GjJzYbJZdz0dsyiInnmLkL2",
+                        "itemCount": 1,
+                        "totalAmount": 500,
+                        "currency": "GHS",
+                        "items": [
+                          {
+                            "productId": "6YUZmN3n4hCyrILAGMtZ",
+                            "productName": "Chicken Thighs",
+                            "quantity": 5,
+                            "unitPrice": 100,
+                            "totalPrice": 500,
+                            "currency": "GHS",
+                            "unit": "kg",
+                            "imageUrl": "https://storage.googleapis.com/picky-basket.firebasestorage.app/uploads/products/2d982139-65c7-462f-8df1-8bf2652d34e5"
+                          }
+                        ],
+                        "expiresAt": "2026-04-06T23:16:58.028077+00:00"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "Insufficient Stock": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Insufficient stock. Available: 5, Requested: 10"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "Unauthorized": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Invalid credentials."
+                    }
+                  },
+                  "Expired Token": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Refresh token is invalid or expired."
+                    }
+                  },
+                  "Not authenticated": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Not authenticated"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": "Failed",
+                  "message": "Access denied."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "Product Not Found": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Product not found."
+                    }
+                  },
+                  "Inventory Not Found": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Inventory record not found."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": "Failed",
+                  "message": "Failed to add item to cart."
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/cart/update/{productId}": {
+      "put": {
+        "tags": ["Cart"],
+        "summary": "Update Cart Item",
+        "operationId": "update_cart_item_api_v1_cart_update__productId__put",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Productid"
+            }
+          },
+          {
+            "name": "quantity",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Quantity"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "Cart Updated": {
+                    "value": {
+                      "status": "Success",
+                      "message": "Cart item updated successfully.",
+                      "data": {
+                        "cartId": "nzMn1GjJzYbJZdz0dsyiInnmLkL2",
+                        "itemCount": 1,
+                        "totalAmount": 1000,
+                        "currency": "GHS",
+                        "items": [
+                          {
+                            "quantity": 10,
+                            "addedAt": "2026-03-23T21:22:53.229788+00:00",
+                            "totalPrice": 1000,
+                            "currency": "GHS",
+                            "productId": "6YUZmN3n4hCyrILAGMtZ",
+                            "productName": "Chicken Thighs",
+                            "imageUrl": "https://storage.googleapis.com/picky-basket.firebasestorage.app/uploads/products/2d982139-65c7-462f-8df1-8bf2652d34e5",
+                            "unit": "kg",
+                            "unitPrice": 100
+                          }
+                        ],
+                        "expiresAt": "2026-03-24T21:22:53.229788+00:00",
+                        "status": "active"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Unauthorized": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Invalid credentials."
+                    }
+                  },
+                  "Expired Token": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Refresh token is invalid or expired."
+                    }
+                  },
+                  "Not authenticated": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Not authenticated"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "Failed",
+                  "message": "Access denied."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Cart Not Found": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Cart not found."
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "Failed",
+                  "message": "Failed to update cart item."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/cart/clear": {
+      "delete": {
+        "tags": ["Cart"],
+        "summary": "Clear Cart",
+        "operationId": "clear_cart_api_v1_cart_clear_delete",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "Cart Cleared": {
+                    "value": {
+                      "status": "Success",
+                      "message": "Cart cleared successfully.",
+                      "data": {
+                        "cartId": "nzMn1GjJzYbJZdz0dsyiInnmLkL2",
+                        "itemCount": 0,
+                        "totalAmount": 0,
+                        "items": [],
+                        "status": "empty"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Cart Already Empty",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": "Failed",
+                  "message": "Cart is already empty."
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "Unauthorized": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Invalid credentials."
+                    }
+                  },
+                  "Expired Token": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Refresh token is invalid or expired."
+                    }
+                  },
+                  "Not authenticated": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Not authenticated"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": "Failed",
+                  "message": "Access denied."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "Cart Not Found": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Cart not found."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": "Failed",
+                  "message": "Failed to clear cart."
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/cart/remove/{productId}": {
+      "delete": {
+        "tags": ["Cart"],
+        "summary": "Remove From Cart",
+        "operationId": "remove_from_cart_api_v1_cart_remove__productId__delete",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Productid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "Item Removed": {
+                    "value": {
+                      "status": "Success",
+                      "message": "Item removed from cart successfully.",
+                      "data": {
+                        "cartId": "nzMn1GjJzYbJZdz0dsyiInnmLkL2",
+                        "itemCount": 1,
+                        "totalAmount": 300,
+                        "currency": "GHS",
+                        "items": [
+                          {
+                            "quantity": 12,
+                            "addedAt": "2026-03-23T23:43:30.824916+00:00",
+                            "totalPrice": 300,
+                            "productName": "Watermelon",
+                            "productId": "V8eMV22siK1b2DGpZivq",
+                            "imageUrl": "https://storage.googleapis.com/picky-basket.firebasestorage.app/uploads/products/2d982139-65c7-462f-8df1-8bf2652d34e5",
+                            "currency": "GHS",
+                            "unit": "piece",
+                            "unitPrice": 25
+                          }
+                        ],
+                        "expiresAt": "2026-03-24T23:44:31.068106+00:00",
+                        "status": "active"
+                      }
+                    }
+                  },
+                  "Cart Cleared": {
+                    "value": {
+                      "status": "Success",
+                      "message": "Item removed from cart. Cart is now empty.",
+                      "data": {
+                        "cartId": "nzMn1GjJzYbJZdz0dsyiInnmLkL2",
+                        "itemCount": 0,
+                        "totalAmount": 0,
+                        "items": [],
+                        "status": "empty"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Cart Already Empty",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "Failed",
+                  "message": "Cart is already empty."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Unauthorized": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Invalid credentials."
+                    }
+                  },
+                  "Expired Token": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Refresh token is invalid or expired."
+                    }
+                  },
+                  "Not authenticated": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Not authenticated"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "Failed",
+                  "message": "Access denied."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Cart Not Found": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Cart not found."
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "Failed",
+                  "message": "Failed to remove item from cart."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/checkout": {
+      "post": {
+        "tags": ["Checkout"],
+        "summary": "Checkout",
+        "operationId": "checkout_api_v1_checkout_post",
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_checkout_api_v1_checkout_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "Order created": {
+                    "value": {
+                      "status": "Success",
+                      "message": "Order created successfully.",
+                      "data": {
+                        "orderId": "z7NutWMFueztsJcdHxpe",
+                        "orderNumber": "PB-CEA2204F",
+                        "status": "pending",
+                        "total": 200,
+                        "currency": "GHS",
+                        "itemCount": 1,
+                        "paymentStatus": "pending",
+                        "shippingAddress": {
+                          "streetAddress": "D82 Wuoleiatse O Kofi III St",
+                          "ghanapostCode": "GS-0706-8463",
+                          "city": "Accra",
+                          "state": "Greater Accra",
+                          "country": "Ghana",
+                          "recipientName": "Collins Makafui Baragbor",
+                          "recipientPhoneNumber": "+233200585542"
+                        },
+                        "estimatedDelivery": "2026-04-22T18:44:05.604935+00:00",
+                        "createdAt": "2026-04-20T18:44:05.604935+00:00"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "Insufficient Stock": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Insufficient stock. Available: 5, Requested: 10"
+                    }
+                  },
+                  "Out of Stock": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Product 'Beef' is out of stock."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "Unauthorized": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Invalid credentials."
+                    }
+                  },
+                  "Expired Token": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Refresh token is invalid or expired."
+                    }
+                  },
+                  "Not authenticated": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Not authenticated"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": "Failed",
+                  "message": "Access denied."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "Cart Not Found": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Cart not found."
+                    }
+                  },
+                  "Product Not Found": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Product not found."
+                    }
+                  },
+                  "Inventory Not Found": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Inventory record not found."
+                    }
+                  },
+                  "Product Inventory Record Not Found": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Inventory record for product 'Beef' not found."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": "Failed",
+                  "message": "Failed to process checkout."
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/order/all": {
+      "get": {
+        "tags": ["Orders"],
+        "summary": "Get Orders",
+        "operationId": "get_orders_api_v1_order_all_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/OrderStatusEnum"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by order status",
+              "title": "Status"
+            },
+            "description": "Filter by order status"
+          },
+          {
+            "name": "payment_status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by payment status",
+              "title": "Payment Status"
+            },
+            "description": "Filter by payment status"
+          },
+          {
+            "name": "from_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter orders from this date",
+              "title": "From Date"
+            },
+            "description": "Filter orders from this date"
+          },
+          {
+            "name": "to_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter orders to this date",
+              "title": "To Date"
+            },
+            "description": "Filter orders to this date"
+          },
+          {
+            "name": "min_amount",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Minimum order amount",
+              "title": "Min Amount"
+            },
+            "description": "Minimum order amount"
+          },
+          {
+            "name": "max_amount",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Maximum order amount",
+              "title": "Max Amount"
+            },
+            "description": "Maximum order amount"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Search by order number or product name or category name",
+              "title": "Search"
+            },
+            "description": "Search by order number or product name or category name"
+          },
+          {
+            "name": "sort_by",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Sort field (createdAt, orderNumber)",
+              "default": "createdAt",
+              "title": "Sort By"
+            },
+            "description": "Sort field (createdAt, orderNumber)"
+          },
+          {
+            "name": "sort_order",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Sort order (asc or desc)",
+              "default": "desc",
+              "title": "Sort Order"
+            },
+            "description": "Sort order (asc or desc)"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Page number",
+              "default": 1,
+              "title": "Page"
+            },
+            "description": "Page number"
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 50,
+              "minimum": 1,
+              "description": "Items per page",
+              "default": 10,
+              "title": "Page Size"
+            },
+            "description": "Items per page"
+          },
+          {
+            "name": "cursor_created_at",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor Created At"
+            }
+          },
+          {
+            "name": "cursor_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/order/{orderId}": {
+      "get": {
+        "tags": ["Orders"],
+        "summary": "Get Order Details",
+        "operationId": "get_order_details_api_v1_order__orderId__get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Orderid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/order/{orderId}/status": {
+      "patch": {
+        "tags": ["Orders"],
+        "summary": "Update Order Status",
+        "operationId": "update_order_status_api_v1_order__orderId__status_patch",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Orderid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderStatusUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AddToCartRequest": {
+        "properties": {
+          "productId": {
+            "type": "string",
+            "title": "Productid"
+          },
+          "quantity": {
+            "type": "integer",
+            "maximum": 1000,
+            "minimum": 1,
+            "title": "Quantity"
+          }
+        },
+        "type": "object",
+        "required": ["productId", "quantity"],
+        "title": "AddToCartRequest"
+      },
+      "Body_checkout_api_v1_checkout_post": {
+        "properties": {
+          "shippingAddressId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Shippingaddressid"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          }
+        },
+        "type": "object",
+        "title": "Body_checkout_api_v1_checkout_post"
+      },
+      "ErrorResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": ["status", "message"],
+        "title": "ErrorResponse"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "OrderStatusEnum": {
+        "type": "string",
+        "enum": [
+          "pending",
+          "confirmed",
+          "processing",
+          "shipped",
+          "delivered",
+          "cancelled",
+          "refunded"
+        ],
+        "title": "OrderStatusEnum"
+      },
+      "OrderStatusUpdate": {
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/OrderStatusEnum"
+          },
+          "cancellationReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cancellationreason"
+          }
+        },
+        "type": "object",
+        "required": ["status", "cancellationReason"],
+        "title": "OrderStatusUpdate"
+      },
+      "SuccessResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": ["status", "message"],
+        "title": "SuccessResponse"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": ["loc", "msg", "type"],
+        "title": "ValidationError"
+      }
+    },
+    "securitySchemes": {
+      "OAuth2PasswordBearer": {
+        "type": "oauth2",
+        "flows": {
+          "password": {
+            "scopes": {},
+            "tokenUrl": "/token"
+          }
+        }
+      }
+    }
+  }
+}

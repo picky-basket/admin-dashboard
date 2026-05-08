@@ -1,0 +1,2511 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "FastAPI",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "Root",
+        "operationId": "root__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/product/category/add": {
+      "post": {
+        "tags": ["Product Category"],
+        "summary": "Add Category",
+        "operationId": "add_category_api_v1_product_category_add_post",
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_add_category_api_v1_product_category_add_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "example": {
+                  "status": "Success",
+                  "message": "Category added successfully."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "Missing Field": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "'imageUrl' is required."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "Unauthorized": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Invalid credentials."
+                    }
+                  },
+                  "Expired Token": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Refresh token is invalid or expired."
+                    }
+                  },
+                  "Not authenticated": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Not authenticated"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": "Failed",
+                  "message": "Access denied."
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "Category Exists": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Category already exists."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "Max Length": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Category name cannot exceed 50 characters."
+                    }
+                  },
+                  "Max Image Size": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Image file size exceeds 2MB limit."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/product/category/{categoryId}": {
+      "patch": {
+        "tags": ["Product Category"],
+        "summary": "Update Category",
+        "operationId": "update_category_api_v1_product_category__categoryId__patch",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "categoryId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Categoryid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_update_category_api_v1_product_category__categoryId__patch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "example": {
+                  "status": "Success",
+                  "message": "Category updated successfully."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Missing Field": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "'imageUrl' is required."
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Unauthorized": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Invalid credentials."
+                    }
+                  },
+                  "Expired Token": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Refresh token is invalid or expired."
+                    }
+                  },
+                  "Not authenticated": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Not authenticated"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "Failed",
+                  "message": "Access denied."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Category Not Found": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Category not found."
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Category Name Exists": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Category name already exists."
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Content",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Max Length": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Category name cannot exceed 50 characters."
+                    }
+                  },
+                  "Max Image Size": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Image file size exceeds 2MB limit."
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Product Category"],
+        "summary": "Delete Category",
+        "operationId": "delete_category_api_v1_product_category__categoryId__delete",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "categoryId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Categoryid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "example": {
+                  "status": "Success",
+                  "message": "Category deleted successfully."
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Unauthorized": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Invalid credentials."
+                    }
+                  },
+                  "Expired Token": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Refresh token is invalid or expired."
+                    }
+                  },
+                  "Not authenticated": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Not authenticated"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "Failed",
+                  "message": "Access denied."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Category Not Found": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Category not found."
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Content",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Unprocessable Content": {
+                    "value": {
+                      "status": "string",
+                      "message": "string"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/product/categories": {
+      "get": {
+        "tags": ["Product Category"],
+        "summary": "Get Categories",
+        "operationId": "get_categories_api_v1_product_categories_get",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "example": {
+                  "status": "Success",
+                  "data": [
+                    {
+                      "createdAt": "2026-03-01T23:14:41.662268+00:00",
+                      "id": "69P0GJRhZOcxagLxVWIJ",
+                      "updatedAt": "2026-03-01T23:27:40.931431+00:00",
+                      "imageUrl": "https://storage.googleapis.com/picky-basket.firebasestorage.app/uploads/categories/f3caf9b3-65ae-4219-9e69-5adb28717137.jpeg",
+                      "name": "Vegetables"
+                    },
+                    {
+                      "createdAt": "2026-03-01T21:00:57.595325+00:00",
+                      "id": "R3kb8jufWp8GsKTO8J95",
+                      "imageUrl": "https://storage.googleapis.com/picky-basket.firebasestorage.app/uploads/categories/74439ba4-dc85-464c-ada7-bac3d87e7876.jpeg",
+                      "name": "Meat & Poultry"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "Unauthorized": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Invalid credentials."
+                    }
+                  },
+                  "Expired Token": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Refresh token is invalid or expired."
+                    }
+                  },
+                  "Not authenticated": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Not authenticated"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": "Failed",
+                  "message": "Access denied."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/product/add": {
+      "post": {
+        "tags": ["Product"],
+        "summary": "Add Product",
+        "operationId": "add_product_api_v1_product_add_post",
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_add_product_api_v1_product_add_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "example": {
+                  "status": "Success",
+                  "message": "Product added successfully."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "Missing Field": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "'imageUrl' is required."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "Unauthorized": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Invalid credentials."
+                    }
+                  },
+                  "Expired Token": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Refresh token is invalid or expired."
+                    }
+                  },
+                  "Not authenticated": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Not authenticated"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": "Failed",
+                  "message": "Access denied."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "Category Not Found": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Category not found."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "Max Length": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Product name cannot exceed 100 characters."
+                    }
+                  },
+                  "Max Image Size": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Image file size exceeds 2MB limit."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/product/{productId}/update": {
+      "patch": {
+        "tags": ["Product"],
+        "summary": "Update Product",
+        "operationId": "update_product_api_v1_product__productId__update_patch",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Productid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_update_product_api_v1_product__productId__update_patch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "example": {
+                  "status": "Success",
+                  "message": "Product updated successfully."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Missing Field": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "'imageUrl' is required."
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Unauthorized": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Invalid credentials."
+                    }
+                  },
+                  "Expired Token": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Refresh token is invalid or expired."
+                    }
+                  },
+                  "Not authenticated": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Not authenticated"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "Failed",
+                  "message": "Access denied."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Product Not Found": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Product not found."
+                    }
+                  },
+                  "Category Not Found": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Category not found."
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Content",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Max Length": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Product name cannot exceed 100 characters."
+                    }
+                  },
+                  "Max Image Size": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Image file size exceeds 2MB limit."
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/product/{productId}": {
+      "delete": {
+        "tags": ["Product"],
+        "summary": "Delete Product",
+        "operationId": "delete_product_api_v1_product__productId__delete",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Productid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "example": {
+                  "status": "Success",
+                  "message": "Product deleted successfully."
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Unauthorized": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Invalid credentials."
+                    }
+                  },
+                  "Expired Token": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Refresh token is invalid or expired."
+                    }
+                  },
+                  "Not authenticated": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Not authenticated"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "Failed",
+                  "message": "Access denied."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Product Not Found": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Product not found."
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": ["Product"],
+        "summary": "Get Product By Id",
+        "operationId": "get_product_by_id_api_v1_product__productId__get",
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Productid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "example": {
+                  "status": "Success",
+                  "data": [
+                    {
+                      "id": "string",
+                      "name": "string",
+                      "description": "string",
+                      "brand": "string",
+                      "price": 0,
+                      "currency": "string",
+                      "unit": "string",
+                      "categoryId": "string",
+                      "categoryName": "string",
+                      "tags": ["string"],
+                      "imageUrl": "string",
+                      "createdAt": "2026-03-01T23:14:41.662268+00:00"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Unauthorized": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Invalid credentials."
+                    }
+                  },
+                  "Expired Token": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Refresh token is invalid or expired."
+                    }
+                  },
+                  "Not authenticated": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Not authenticated"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "Failed",
+                  "message": "Access denied."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/product/inventory/{productId}/update": {
+      "patch": {
+        "tags": ["Product"],
+        "summary": "Update Inventory Stock",
+        "operationId": "update_inventory_stock_api_v1_product_inventory__productId__update_patch",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Productid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StockUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "example": {
+                  "status": "Success",
+                  "message": "Stock updated successfully."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "Failed",
+                  "message": "'stockQuantity' is required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Unauthorized": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Invalid credentials."
+                    }
+                  },
+                  "Expired Token": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Refresh token is invalid or expired."
+                    }
+                  },
+                  "Not authenticated": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Not authenticated"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "Failed",
+                  "message": "Access denied."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "Failed",
+                  "message": "Inventory not found."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "Failed",
+                  "message": "Failed to update inventory."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/products": {
+      "get": {
+        "tags": ["Product"],
+        "summary": "Get Products",
+        "operationId": "get_products_api_v1_products_get",
+        "parameters": [
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter products by category ID",
+              "title": "Category"
+            },
+            "description": "Filter products by category ID"
+          },
+          {
+            "name": "min_price",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Minimum product price",
+              "title": "Min Price"
+            },
+            "description": "Minimum product price"
+          },
+          {
+            "name": "max_price",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Maximum product price",
+              "title": "Max Price"
+            },
+            "description": "Maximum product price"
+          },
+          {
+            "name": "is_available",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by availability",
+              "title": "Is Available"
+            },
+            "description": "Filter by availability"
+          },
+          {
+            "name": "tags",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by comm-separated tags",
+              "title": "Tags"
+            },
+            "description": "Filter by comm-separated tags"
+          },
+          {
+            "name": "sort_by",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Sort field (createdAt, price, name)",
+              "default": "createdAt",
+              "title": "Sort By"
+            },
+            "description": "Sort field (createdAt, price, name)"
+          },
+          {
+            "name": "sort_order",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "asc or desc",
+              "default": "desc",
+              "title": "Sort Order"
+            },
+            "description": "asc or desc"
+          },
+          {
+            "name": "cursor_created_at",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor Created At"
+            }
+          },
+          {
+            "name": "cursor_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor Id"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 10,
+              "title": "Page Size"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "example": {
+                  "status": "Success",
+                  "data": [
+                    {
+                      "id": "string",
+                      "name": "string",
+                      "description": "string",
+                      "brand": "string",
+                      "price": 0,
+                      "currency": "string",
+                      "unit": "string",
+                      "categoryId": "string",
+                      "categoryName": "string",
+                      "tags": ["string"],
+                      "imageUrl": "string",
+                      "createdAt": "2026-03-01T23:14:41.662268+00:00"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Unauthorized": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Invalid credentials."
+                    }
+                  },
+                  "Expired Token": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Refresh token is invalid or expired."
+                    }
+                  },
+                  "Not authenticated": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Not authenticated"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "Failed",
+                  "message": "Access denied."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/upload/url": {
+      "get": {
+        "tags": ["Uploads"],
+        "summary": "Get Upload Url",
+        "operationId": "get_upload_url_api_v1_upload_url_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "context",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/UploadContext"
+            }
+          },
+          {
+            "name": "contentType",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/AllowedTypes"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "Products": {
+                    "value": {
+                      "signedUrl": "https://storage.googleapis.com/picky-basket.firebasestorage.app/uploads/products/0d77bd7b-89eb-44eb-8d81-bcc794055953?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=firebase-adminsdk-fbsvc%40picky-basket.iam.gserviceaccount.com%2F20260306%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260306T155117Z&X-Goog-Expires=300&X-Goog-SignedHeaders=content-type%3Bhost&X-Goog-Signature=80f44c4bb9cd8ab982d6495ad29d87e37d8a074e6fdea6df168509babd6a2a270695d5dd329ed1d91c8c5ab22b4882f0b7d3b19f92874239de738176d09199b54f0c606531280c987ccbb78811b2eaf6c4a302bcf6c2028f08f5dca32fc2df9e5339e88b325ef89279b81f887c9814b9fa5bccecc6477b969bf068800e2afa56904da63a4b6596955fbeb0332512ce1992f1573d0891ef678fa8d494aec529fa58dcf2c29c4875e8f3313a712abb3ddb8217d67fb7047f0b295ef625578811fc534273fdd9f8b64217ae99b0b255095a112a33bd5f9fe64ad2dee05784852e8edc52e4b2044add04ca70779e5b6b222ce79e775fd1dadbcc126a384a85abbc37",
+                      "ImagePath": "uploads/products/0d77bd7b-89eb-44eb-8d81-bcc794055953",
+                      "expiresIn": 300
+                    }
+                  },
+                  "Categories": {
+                    "value": {
+                      "signedUrl": "https://storage.googleapis.com/picky-basket.firebasestorage.app/uploads/categories/93857382-79d7-4aa2-9af8-f2c3de669b86?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=firebase-adminsdk-fbsvc%40picky-basket.iam.gserviceaccount.com%2F20260306%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260306T141022Z&X-Goog-Expires=300&X-Goog-SignedHeaders=content-type%3Bhost&X-Goog-Signature=1f65b3157ba59e18be243249546fd6856737a18878b1c1e647e8425c3381c879197f8a3ef0f146d3847392203fc83f1ce874e9090de79b0e7d1f828d7e68672700b1a13707a2fb85e2be4f79aabaecb7c2aaae68084fdee02cec19577ea9750e979925e9e61a89ff9aaa6e2ac88ae2190cdbfb9a3c5a851592a9c70c0c61296667ba24df2cc2bb2da41822d67abdf6d20e14c74bc4cb19bfda4a27676ab80fd637141556d8adb28ec74695d3fbcb23d96cb5eb16011dfed84d310af1ff2f3e31953621f8d8f32ea7f5889fe63adc5dd16cbcfd594a05b43787155594cb3ed443a6053f0365800b96a8a470d6b80df76c597af325177af8c8d4c18df63f5ff335",
+                      "ImagePath": "uploads/categories/93857382-79d7-4aa2-9af8-f2c3de669b86",
+                      "expiresIn": 300
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "Failed",
+                  "message": "'context' is required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Unauthorized": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Invalid credentials."
+                    }
+                  },
+                  "Expired Token": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Refresh token is invalid or expired."
+                    }
+                  },
+                  "Not authenticated": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Not authenticated"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Invalid Role": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Access denied."
+                    }
+                  },
+                  "Invalid Context": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Access denied."
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/dish/add": {
+      "post": {
+        "tags": ["Dish"],
+        "summary": "Add Dish",
+        "operationId": "add_dish_api_v1_dish_add_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DishCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "example": {
+                  "status": "Success",
+                  "message": "Dish added successfully."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "Missing Field": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "'imagePath' is required."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "Unauthorized": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Invalid credentials."
+                    }
+                  },
+                  "Expired Token": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Refresh token is invalid or expired."
+                    }
+                  },
+                  "Not authenticated": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Not authenticated"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": "Failed",
+                  "message": "Access denied."
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "Dish Exists": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "'Dish already exists."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "Invalid Dish Name": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Dish name cannot be empty."
+                    }
+                  },
+                  "Invalid Image Path": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Invalid image path."
+                    }
+                  },
+                  "No Products": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Dish must have at least one product."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/dish/{dishId}/update": {
+      "put": {
+        "tags": ["Dish"],
+        "summary": "Update Dish",
+        "operationId": "update_dish_api_v1_dish__dishId__update_put",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "dishId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Dishid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DishCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "example": {
+                  "status": "Success",
+                  "message": "Dish added successfully."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Missing Field": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "'imagePath' is required."
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Unauthorized": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Invalid credentials."
+                    }
+                  },
+                  "Expired Token": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Refresh token is invalid or expired."
+                    }
+                  },
+                  "Not authenticated": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Not authenticated"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "Failed",
+                  "message": "Access denied."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Dish Exists": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "'Dish already exists."
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Invalid Dish Name": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Dish name cannot be empty."
+                    }
+                  },
+                  "Invalid Image Path": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Invalid image path."
+                    }
+                  },
+                  "No Products": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Dish must have at least one product."
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/dish/list": {
+      "get": {
+        "tags": ["Dish"],
+        "summary": "Get Dishes",
+        "operationId": "get_dishes_api_v1_dish_list_get",
+        "parameters": [
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "description": "Number of items per page",
+              "default": 10,
+              "title": "Page Size"
+            },
+            "description": "Number of items per page"
+          },
+          {
+            "name": "cursorCreatedAt",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Cursor for pagination",
+              "title": "Cursorcreatedat"
+            },
+            "description": "Cursor for pagination"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "example": {
+                  "status": "Success",
+                  "data": [
+                    {
+                      "products": [
+                        {
+                          "quantity": 2,
+                          "unit": "kg",
+                          "price": 100,
+                          "productName": "Chicken Thighs",
+                          "productId": "6YUZmN3n4hCyrILAGMtZ"
+                        }
+                      ],
+                      "dishId": "1UQURmPPUKXi4QlPPxJy",
+                      "createdAt": "2026-04-15T00:28:21.429401+00:00",
+                      "imageUrl": "https://storage.googleapis.com/picky-basket.firebasestorage.app/uploads/dishes/507808f5-10c7-4e85-a6aa-1ed0ad0540af?Expires=1776216564&GoogleAccessId=firebase-adminsdk-fbsvc%40picky-basket.iam.gserviceaccount.com&Signature=Dac0khz7KHUFONc24nwkpei6EgK2nact4wzFdrXzCW36bWwMdpyp5NFK8jc0UYKu%2Fi2vfYiCG190UjRN4IMt76HiJVB1wMOO8gml8yukgEyZucxmzNv8qh4IJFtLZy2T8LbdwWZlCBX3xoLCu1HB36RBq68drIveXs2vT%2BgwKyEfBcFl1DNXl64iSSFnvkqHSAV9c5vbYjsnLlFqJSNKgruYAOPuWoI5ckrgejKzO883poIfCvHECuQSNryYu4cRUh5sX1UJLaGGrcE3iLF9VuTuCvn69QiPst11vIYVVlN4DNrNuqUHxJPlLAOLYFIMWPAXhW9J%2FNLAt0F2%2B7MgIQ%3D%3D",
+                      "name": "Jollof Rice",
+                      "id": "1UQURmPPUKXi4QlPPxJy"
+                    }
+                  ],
+                  "pagination": {
+                    "pageSize": 10,
+                    "hasMore": false
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Dish Not Found": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Dish not found."
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/dish/{dishId}": {
+      "get": {
+        "tags": ["Dish"],
+        "summary": "Get Dish By Id",
+        "operationId": "get_dish_by_id_api_v1_dish__dishId__get",
+        "parameters": [
+          {
+            "name": "dishId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Dishid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "example": {
+                  "status": "Success",
+                  "data": [
+                    {
+                      "products": [
+                        {
+                          "quantity": 2,
+                          "unit": "kg",
+                          "price": 100,
+                          "productName": "Chicken Thighs",
+                          "productId": "6YUZmN3n4hCyrILAGMtZ"
+                        }
+                      ],
+                      "dishId": "1UQURmPPUKXi4QlPPxJy",
+                      "createdAt": "2026-04-15T00:28:21.429401+00:00",
+                      "imageUrl": "https://storage.googleapis.com/picky-basket.firebasestorage.app/uploads/dishes/507808f5-10c7-4e85-a6aa-1ed0ad0540af?Expires=1776216564&GoogleAccessId=firebase-adminsdk-fbsvc%40picky-basket.iam.gserviceaccount.com&Signature=Dac0khz7KHUFONc24nwkpei6EgK2nact4wzFdrXzCW36bWwMdpyp5NFK8jc0UYKu%2Fi2vfYiCG190UjRN4IMt76HiJVB1wMOO8gml8yukgEyZucxmzNv8qh4IJFtLZy2T8LbdwWZlCBX3xoLCu1HB36RBq68drIveXs2vT%2BgwKyEfBcFl1DNXl64iSSFnvkqHSAV9c5vbYjsnLlFqJSNKgruYAOPuWoI5ckrgejKzO883poIfCvHECuQSNryYu4cRUh5sX1UJLaGGrcE3iLF9VuTuCvn69QiPst11vIYVVlN4DNrNuqUHxJPlLAOLYFIMWPAXhW9J%2FNLAt0F2%2B7MgIQ%3D%3D",
+                      "name": "Jollof Rice",
+                      "id": "1UQURmPPUKXi4QlPPxJy"
+                    }
+                  ],
+                  "pagination": {
+                    "pageSize": 10,
+                    "hasMore": false
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Dish Not Found": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Dish not found."
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/dish/{dishId}/delete": {
+      "delete": {
+        "tags": ["Dish"],
+        "summary": "Delete Dish",
+        "operationId": "delete_dish_api_v1_dish__dishId__delete_delete",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "dishId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Dishid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AllowedTypes": {
+        "type": "string",
+        "enum": ["image/jpeg", "image/png"],
+        "title": "AllowedTypes"
+      },
+      "Body_add_category_api_v1_product_category_add_post": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "imagePath": {
+            "type": "string",
+            "title": "Imagepath"
+          }
+        },
+        "type": "object",
+        "required": ["name", "imagePath"],
+        "title": "Body_add_category_api_v1_product_category_add_post"
+      },
+      "Body_add_product_api_v1_product_add_post": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "brand": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Brand"
+          },
+          "price": {
+            "type": "number",
+            "title": "Price"
+          },
+          "currency": {
+            "$ref": "#/components/schemas/CurrencyEnum"
+          },
+          "unit": {
+            "$ref": "#/components/schemas/UnitEnum"
+          },
+          "categoryId": {
+            "type": "string",
+            "title": "Categoryid"
+          },
+          "stockQuantity": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stockquantity"
+          },
+          "tags": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tags"
+          },
+          "imagePath": {
+            "type": "string",
+            "title": "Imagepath"
+          }
+        },
+        "type": "object",
+        "required": ["name", "price", "currency", "unit", "categoryId", "imagePath"],
+        "title": "Body_add_product_api_v1_product_add_post"
+      },
+      "Body_update_category_api_v1_product_category__categoryId__patch": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "imagePath": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Imagepath"
+          }
+        },
+        "type": "object",
+        "title": "Body_update_category_api_v1_product_category__categoryId__patch"
+      },
+      "Body_update_product_api_v1_product__productId__update_patch": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "brand": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Brand"
+          },
+          "price": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Price"
+          },
+          "currency": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CurrencyEnum"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/UnitEnum"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "categoryId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Categoryid"
+          },
+          "tags": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tags"
+          },
+          "imagePath": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Imagepath"
+          }
+        },
+        "type": "object",
+        "title": "Body_update_product_api_v1_product__productId__update_patch"
+      },
+      "CurrencyEnum": {
+        "type": "string",
+        "enum": ["GHS"],
+        "title": "CurrencyEnum"
+      },
+      "DishCreate": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "imagePath": {
+            "type": "string",
+            "title": "Imagepath"
+          },
+          "products": {
+            "items": {
+              "$ref": "#/components/schemas/DishProduct"
+            },
+            "type": "array",
+            "title": "Products"
+          }
+        },
+        "type": "object",
+        "required": ["name", "imagePath", "products"],
+        "title": "DishCreate"
+      },
+      "DishProduct": {
+        "properties": {
+          "productId": {
+            "type": "string",
+            "title": "Productid"
+          },
+          "quantity": {
+            "type": "number",
+            "title": "Quantity"
+          }
+        },
+        "type": "object",
+        "required": ["productId", "quantity"],
+        "title": "DishProduct"
+      },
+      "ErrorResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": ["status", "message"],
+        "title": "ErrorResponse"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "StockUpdateRequest": {
+        "properties": {
+          "stockQuantity": {
+            "type": "integer",
+            "minimum": 0,
+            "title": "Stockquantity",
+            "description": "Stock quantity."
+          }
+        },
+        "type": "object",
+        "required": ["stockQuantity"],
+        "title": "StockUpdateRequest"
+      },
+      "SuccessResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": ["status", "message"],
+        "title": "SuccessResponse"
+      },
+      "UnitEnum": {
+        "type": "string",
+        "enum": [
+          "kg",
+          "g",
+          "liter",
+          "ml",
+          "piece",
+          "pack",
+          "dozen",
+          "bunch",
+          "bag",
+          "bulb",
+          "can",
+          "head"
+        ],
+        "title": "UnitEnum"
+      },
+      "UploadContext": {
+        "type": "string",
+        "enum": ["product_image", "category_image", "dish_image"],
+        "title": "UploadContext"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": ["loc", "msg", "type"],
+        "title": "ValidationError"
+      }
+    },
+    "securitySchemes": {
+      "OAuth2PasswordBearer": {
+        "type": "oauth2",
+        "flows": {
+          "password": {
+            "scopes": {},
+            "tokenUrl": "/token"
+          }
+        }
+      }
+    }
+  }
+}
