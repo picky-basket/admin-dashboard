@@ -1,13 +1,13 @@
-import { Navigate, useLocation } from 'react-router-dom';
+import { Navigate, useRouterState } from '@tanstack/react-router';
 import { useAppStore } from '../../store/appStore.jsx';
 import { ROUTES } from '../../types/routes.js';
 
 export function ProtectedRoute({ children }) {
   const { loggedIn } = useAppStore();
-  const location = useLocation();
+  const location = useRouterState({ select: (state) => state.location });
 
   if (!loggedIn) {
-    return <Navigate to={ROUTES.LOGIN} replace state={{ from: location }} />;
+    return <Navigate to={ROUTES.LOGIN} search={{ redirect: location.href }} />;
   }
 
   return children;

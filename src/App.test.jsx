@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import App from './App.jsx';
 
-test('renders dashboard UI', () => {
+test('renders dashboard UI', async () => {
   render(<App />);
-  expect(screen.getByRole('button', { name: /sign in/i })).toBeInTheDocument();
+  expect(await screen.findByRole('button', { name: /sign in/i })).toBeInTheDocument();
 });

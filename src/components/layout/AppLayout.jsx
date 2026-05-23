@@ -1,37 +1,70 @@
-import { NavLink, Outlet } from 'react-router-dom';
+import { Link, Outlet, useNavigate, useRouterState } from '@tanstack/react-router';
 import { NAV_ITEMS } from '../../types/routes.js';
 import { useAppStore } from '../../store/appStore.jsx';
 import { useBreakpoint } from '../../hooks/useBreakpoint.js';
 
 export function AppLayout() {
-  const { darkMode, setDarkMode, pendingOrders } = useAppStore();
+  const { darkMode, setDarkMode, pendingOrders, setLoggedIn } = useAppStore();
   const { isMobile } = useBreakpoint();
+  const navigate = useNavigate();
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
+
+  const handleLogout = () => {
+    setLoggedIn(false);
+    navigate({ to: '/login' });
+  };
 
   return (
     <div className={darkMode ? 'app-shell dark' : 'app-shell'}>
       <aside className="sidebar">
-        <div className="brand">Picky Basket Admin</div>
+        <div className="sidebar-brand">
+          <div className="sidebar-brand-icon">🧵</div>
+          <div className="sidebar-brand-text">
+            <span className="sidebar-brand-name">Picky Basket</span>
+            <span className="sidebar-brand-sub">Admin Portal</span>
+          </div>
+        </div>
+
         <nav>
           {NAV_ITEMS.map((item) => (
-            <NavLink
+            <Link
               key={item.key}
               to={item.path}
-              end={item.path === '/'}
-              className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}
+              className={
+                pathname === item.path || (item.path !== '/' && pathname.startsWith(item.path))
+                  ? 'nav-link active'
+                  : 'nav-link'
+              }
             >
-              <span>{item.label}</span>
+              <span className="nav-item-inner">
+                <span className="nav-icon">{item.icon}</span>
+                <span className="nav-label">{item.label}</span>
+              </span>
               {item.key === 'orders' && pendingOrders > 0 ? <span className="badge">{pendingOrders}</span> : null}
-            </NavLink>
+            </Link>
           ))}
         </nav>
 
-        <button
-          type="button"
-          className="toggle-btn"
-          onClick={() => setDarkMode((value) => !value)}
-        >
-          {darkMode ? 'Switch to Light' : 'Switch to Dark'}
-        </button>
+        <div className="sidebar-footer">
+          <div className="sidebar-profile">
+            <div className="sidebar-avatar">A</div>
+            <div className="sidebar-profile-info">
+              <span className="sidebar-profile-name">Admin</span>
+              <span className="sidebar-profile-email">admin@pickybasket.com</span>
+            </div>
+          </div>
+          <div className="sidebar-footer-actions">
+            <button type="button" className="sidebar-icon-btn" title={darkMode ? 'Switch to light' : 'Switch to dark'} onClick={() => setDarkMode((d) => !d)}>
+              {darkMode ? '☀️' : '🌙'}
+            </button>
+            <Link to="/settings" className="sidebar-icon-btn" title="Settings">
+              ⚙️
+            </Link>
+          </div>
+          <button type="button" className="sidebar-logout" onClick={handleLogout}>
+            Log out
+          </button>
+        </div>
       </aside>
 
       <div className="content-shell">
