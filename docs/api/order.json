@@ -14,7 +14,9 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+
+                }
               }
             }
           }
@@ -23,7 +25,9 @@
     },
     "/api/v1/cart": {
       "get": {
-        "tags": ["Cart"],
+        "tags": [
+          "Cart"
+        ],
         "summary": "Get Cart",
         "operationId": "get_cart_api_v1_cart_get",
         "responses": {
@@ -161,7 +165,9 @@
     },
     "/api/v1/cart/add": {
       "post": {
-        "tags": ["Cart"],
+        "tags": [
+          "Cart"
+        ],
         "summary": "Add To Cart",
         "operationId": "add_to_cart_api_v1_cart_add_post",
         "requestBody": {
@@ -332,7 +338,9 @@
     },
     "/api/v1/cart/update/{productId}": {
       "put": {
-        "tags": ["Cart"],
+        "tags": [
+          "Cart"
+        ],
         "summary": "Update Cart Item",
         "operationId": "update_cart_item_api_v1_cart_update__productId__put",
         "security": [
@@ -491,7 +499,9 @@
     },
     "/api/v1/cart/clear": {
       "delete": {
-        "tags": ["Cart"],
+        "tags": [
+          "Cart"
+        ],
         "summary": "Clear Cart",
         "operationId": "clear_cart_api_v1_cart_clear_delete",
         "responses": {
@@ -620,7 +630,9 @@
     },
     "/api/v1/cart/remove/{productId}": {
       "delete": {
-        "tags": ["Cart"],
+        "tags": [
+          "Cart"
+        ],
         "summary": "Remove From Cart",
         "operationId": "remove_from_cart_api_v1_cart_remove__productId__delete",
         "security": [
@@ -797,7 +809,9 @@
     },
     "/api/v1/checkout": {
       "post": {
-        "tags": ["Checkout"],
+        "tags": [
+          "Checkout"
+        ],
         "summary": "Checkout",
         "operationId": "checkout_api_v1_checkout_post",
         "requestBody": {
@@ -814,7 +828,9 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+
+                }
               }
             }
           },
@@ -994,7 +1010,9 @@
     },
     "/api/v1/order/all": {
       "get": {
-        "tags": ["Orders"],
+        "tags": [
+          "Orders"
+        ],
         "summary": "Get Orders",
         "operationId": "get_orders_api_v1_order_all_get",
         "security": [
@@ -1158,51 +1176,7 @@
             "description": "Sort order (asc or desc)"
           },
           {
-            "name": "page",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "minimum": 1,
-              "description": "Page number",
-              "default": 1,
-              "title": "Page"
-            },
-            "description": "Page number"
-          },
-          {
-            "name": "page_size",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "maximum": 50,
-              "minimum": 1,
-              "description": "Items per page",
-              "default": 10,
-              "title": "Page Size"
-            },
-            "description": "Items per page"
-          },
-          {
-            "name": "cursor_created_at",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string",
-                  "format": "date-time"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Cursor Created At"
-            }
-          },
-          {
-            "name": "cursor_id",
+            "name": "cursorCreatedAt",
             "in": "query",
             "required": false,
             "schema": {
@@ -1214,16 +1188,317 @@
                   "type": "null"
                 }
               ],
-              "title": "Cursor Id"
+              "description": "Cursor for pagination.",
+              "title": "Cursorcreatedat"
+            },
+            "description": "Cursor for pagination."
+          },
+          {
+            "name": "cursorId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Cursor ID for pagination",
+              "title": "Cursorid"
+            },
+            "description": "Cursor ID for pagination"
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 10,
+              "title": "Pagesize"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "Success",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "Orders Retrieved": {
+                    "value": {
+                      "status": "Success",
+                      "data": {
+                        "orders": [
+                          {
+                            "orderId": "z7NutWMFueztsJcdHxpe",
+                            "orderNumber": "PB-CEA2204F",
+                            "status": "pending",
+                            "paymentStatus": "pending",
+                            "paymentMethod": "mobilemoney",
+                            "paymentDetails": {
+
+                            },
+                            "total": 200,
+                            "currency": "GHS",
+                            "itemCount": 1,
+                            "items": [
+                              {
+                                "quantity": 4,
+                                "totalPrice": 200,
+                                "imageUrl": "https://storage.googleapis.com/picky-basket.firebasestorage.app/uploads/products/40d7a6e3-f7a9-4c57-a0dc-0a1694604ded",
+                                "productId": "Iq6JHmAn8vsj0c8Flffx",
+                                "currency": "GHS",
+                                "productName": "Beef",
+                                "unit": "kg",
+                                "categoryId": "R3kb8jufWp8GsKTO8J95",
+                                "unitPrice": 50,
+                                "categoryName": "Meat & Poultry"
+                              }
+                            ],
+                            "shippingAddress": {
+                              "ghanapostCode": "GS-0706-8463",
+                              "recipientName": "Collins Makafui Baragbor",
+                              "state": "Greater Accra",
+                              "city": "Accra",
+                              "streetAddress": "D82 Wuoleiatse O Kofi III St",
+                              "recipientPhoneNumber": "+233200585542",
+                              "country": "Ghana"
+                            },
+                            "deliveryDetails": {
+                              "estimatedDelivery": "2026-04-22T18:44:05.604935+00:00"
+                            },
+                            "createdAt": "2026-04-20T18:44:05.604935+00:00",
+                            "updatedAt": "2026-04-20T20:18:14.487665+00:00"
+                          },
+                          {
+                            "orderId": "PsQKIP9FJNcT6kJURFEr",
+                            "orderNumber": "PB-1E0253D6",
+                            "status": "pending",
+                            "paymentStatus": "pending",
+                            "paymentMethod": "mobilemoney",
+                            "paymentDetails": {
+
+                            },
+                            "total": 150,
+                            "currency": "GHS",
+                            "itemCount": 2,
+                            "items": [
+                              {
+                                "quantity": 1,
+                                "totalPrice": 50,
+                                "productName": "Beef",
+                                "productId": "Iq6JHmAn8vsj0c8Flffx",
+                                "currency": "GHS",
+                                "imageUrl": "https://storage.googleapis.com/picky-basket.firebasestorage.app/uploads/products/40d7a6e3-f7a9-4c57-a0dc-0a1694604ded",
+                                "unit": "kg",
+                                "categoryId": "R3kb8jufWp8GsKTO8J95",
+                                "unitPrice": 50,
+                                "categoryName": "Meat & Poultry"
+                              },
+                              {
+                                "quantity": 1,
+                                "totalPrice": 100,
+                                "productName": "Chicken Thighs",
+                                "productId": "6YUZmN3n4hCyrILAGMtZ",
+                                "currency": "GHS",
+                                "imageUrl": "https://storage.googleapis.com/picky-basket.firebasestorage.app/uploads/products/2d982139-65c7-462f-8df1-8bf2652d34e5",
+                                "unit": "kg",
+                                "categoryId": "R3kb8jufWp8GsKTO8J95",
+                                "unitPrice": 100,
+                                "categoryName": "Meat & Poultry"
+                              }
+                            ],
+                            "shippingAddress": {
+                              "ghanapostCode": "GS-0706-8463",
+                              "addressLine1": "D82 Wuoleiatse O Kofi III St",
+                              "city": "Accra",
+                              "country": "Ghana",
+                              "state": "Greater Accra",
+                              "phone": "0200585542",
+                              "recipientName": "Collins Makafui Baragbor"
+                            },
+                            "deliveryDetails": {
+                              "estimatedDelivery": "2026-04-19T15:47:00.752060+00:00"
+                            },
+                            "createdAt": "2026-04-17T15:47:00.752060+00:00",
+                            "updatedAt": "2026-04-19T00:12:23.606217+00:00"
+                          },
+                          {
+                            "orderId": "DzetOHTeP6uNhWSH3Bt9",
+                            "orderNumber": "PB-949047B8",
+                            "status": "pending",
+                            "paymentStatus": "pending",
+                            "paymentMethod": "card",
+                            "paymentDetails": {
+
+                            },
+                            "total": 25,
+                            "currency": "GHS",
+                            "itemCount": 1,
+                            "items": [
+                              {
+                                "quantity": 1,
+                                "totalPrice": 25,
+                                "currency": "GHS",
+                                "productId": "V8eMV22siK1b2DGpZivq",
+                                "productName": "Watermelon",
+                                "imageUrl": "https://storage.googleapis.com/picky-basket.firebasestorage.app/uploads/products/1ae637c6-cdff-414b-a614-49b57a67db47",
+                                "unit": "piece",
+                                "categoryId": "x0BqqVC2Miz854nRArcN",
+                                "unitPrice": 25,
+                                "categoryName": "Fruits"
+                              }
+                            ],
+                            "shippingAddress": {
+                              "ghanapostCode": "GS-0706-8463",
+                              "addressLine1": "D82 Wuoleiatse O Kofi III St",
+                              "city": "Accra",
+                              "country": "Ghana",
+                              "state": "Greater Accra",
+                              "phone": "0200585542",
+                              "recipientName": "Collins Makafui Baragbor"
+                            },
+                            "deliveryDetails": {
+                              "estimatedDelivery": "2026-04-08T03:42:57.438960+00:00"
+                            },
+                            "notes": "Ajasco Okada Station",
+                            "createdAt": "2026-04-06T03:42:57.438960+00:00",
+                            "updatedAt": "2026-04-19T02:38:19.161665+00:00"
+                          },
+                          {
+                            "orderId": "XkR9zyicTH3ABbnhFMB9",
+                            "orderNumber": "PB-F5012512",
+                            "status": "pending",
+                            "paymentStatus": "pending",
+                            "paymentMethod": "bank_transfer",
+                            "paymentDetails": {
+
+                            },
+                            "total": 2750,
+                            "currency": "GHS",
+                            "itemCount": 2,
+                            "items": [
+                              {
+                                "quantity": 10,
+                                "totalPrice": 250,
+                                "imageUrl": "https://storage.googleapis.com/picky-basket.firebasestorage.app/uploads/products/1ae637c6-cdff-414b-a614-49b57a67db47",
+                                "productId": "V8eMV22siK1b2DGpZivq",
+                                "currency": "GHS",
+                                "productName": "Watermelon",
+                                "unit": "piece",
+                                "categoryId": "x0BqqVC2Miz854nRArcN",
+                                "unitPrice": 25,
+                                "categoryName": "Fruits"
+                              },
+                              {
+                                "quantity": 25,
+                                "totalPrice": 2500,
+                                "productName": "Chicken Thighs",
+                                "productId": "6YUZmN3n4hCyrILAGMtZ",
+                                "imageUrl": "https://storage.googleapis.com/picky-basket.firebasestorage.app/uploads/products/2d982139-65c7-462f-8df1-8bf2652d34e5",
+                                "currency": "GHS",
+                                "unit": "kg",
+                                "categoryId": "R3kb8jufWp8GsKTO8J95",
+                                "categoryName": "Meat & Poultry",
+                                "unitPrice": 100
+                              }
+                            ],
+                            "shippingAddress": {
+                              "ghanapostCode": "GS-0706-8463",
+                              "addressLine1": "D82 Wuoleiatse O Kofi III St",
+                              "city": "Accra",
+                              "country": "Ghana",
+                              "state": "Greater Accra",
+                              "phone": "0200585542",
+                              "recipientName": "Collins Makafui Baragbor"
+                            },
+                            "deliveryDetails": {
+                              "estimatedDelivery": "2026-04-05T21:41:11.951957+00:00"
+                            },
+                            "notes": "Bortianor",
+                            "createdAt": "2026-04-03T21:41:11.951957+00:00",
+                            "updatedAt": "2026-04-19T02:24:39.633338+00:00"
+                          }
+                        ],
+                        "pagination": {
+                          "pageSize": 10,
+                          "nextCursor": {
+                            "cursorCreatedAt": "2026-04-18T22:14:55.073859",
+                            "cursorId": "XkR9zyicTH3ABbnhFMB9"
+                          },
+                          "hasMore": true
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Unauthorized": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Invalid credentials."
+                    }
+                  },
+                  "Expired Token": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Refresh token is invalid or expired."
+                    }
+                  },
+                  "Not authenticated": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Not authenticated"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "Failed",
+                  "message": "Access denied."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "Failed",
+                  "message": "Failed to fetch orders."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -1242,7 +1517,9 @@
     },
     "/api/v1/order/{orderId}": {
       "get": {
-        "tags": ["Orders"],
+        "tags": [
+          "Orders"
+        ],
         "summary": "Get Order Details",
         "operationId": "get_order_details_api_v1_order__orderId__get",
         "security": [
@@ -1263,10 +1540,154 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "Success",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "Success": {
+                    "value": {
+                      "status": "Success",
+                      "data": {
+                        "orderId": "XkR9zyicTH3ABbnhFMB9",
+                        "orderNumber": "PB-F5012512",
+                        "status": "pending",
+                        "paymentStatus": "pending",
+                        "paymentMethod": "mobilemoney",
+                        "paymentDetails": {
+                          "provider": "paystack",
+                          "url": "https://checkout.paystack.com/pkwv99l6bpet1p6",
+                          "reference": "PB-F5012512-a50c"
+                        },
+                        "subtotal": 2750,
+                        "tax": 0,
+                        "deliveryFee": 0,
+                        "discount": 0,
+                        "total": 2750,
+                        "currency": "GHS",
+                        "items": [
+                          {
+                            "quantity": 10,
+                            "totalPrice": 250,
+                            "imageUrl": "https://storage.googleapis.com/picky-basket.firebasestorage.app/uploads/products/1ae637c6-cdff-414b-a614-49b57a67db47",
+                            "productId": "V8eMV22siK1b2DGpZivq",
+                            "currency": "GHS",
+                            "productName": "Watermelon",
+                            "unit": "piece",
+                            "categoryId": "x0BqqVC2Miz854nRArcN",
+                            "unitPrice": 25,
+                            "categoryName": "Fruits"
+                          },
+                          {
+                            "quantity": 25,
+                            "totalPrice": 2500,
+                            "productName": "Chicken Thighs",
+                            "productId": "6YUZmN3n4hCyrILAGMtZ",
+                            "imageUrl": "https://storage.googleapis.com/picky-basket.firebasestorage.app/uploads/products/2d982139-65c7-462f-8df1-8bf2652d34e5",
+                            "currency": "GHS",
+                            "unit": "kg",
+                            "categoryId": "R3kb8jufWp8GsKTO8J95",
+                            "categoryName": "Meat & Poultry",
+                            "unitPrice": 100
+                          }
+                        ],
+                        "shippingAddress": {
+                          "ghanapostCode": "GS-0706-8463",
+                          "addressLine1": "D82 Wuoleiatse O Kofi III St",
+                          "city": "Accra",
+                          "country": "Ghana",
+                          "state": "Greater Accra",
+                          "phone": "0200585542",
+                          "recipientName": "Collins Makafui Baragbor"
+                        },
+                        "deliveryDetails": {
+                          "estimatedDelivery": "2026-04-05T21:41:11.951957+00:00"
+                        },
+                        "notes": "Bortianor",
+                        "createdAt": "2026-04-03T21:41:11.951957+00:00",
+                        "updatedAt": "2026-04-19T02:24:39.633338+00:00"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Unauthorized": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Invalid credentials."
+                    }
+                  },
+                  "Expired Token": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Refresh token is invalid or expired."
+                    }
+                  },
+                  "Not authenticated": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Not authenticated"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "Failed",
+                  "message": "Access denied."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Order Not Found": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Order not found."
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "Failed",
+                  "message": "Failed to retrieve order details."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -1285,7 +1706,9 @@
     },
     "/api/v1/order/{orderId}/status": {
       "patch": {
-        "tags": ["Orders"],
+        "tags": [
+          "Orders"
+        ],
         "summary": "Update Order Status",
         "operationId": "update_order_status_api_v1_order__orderId__status_patch",
         "security": [
@@ -1319,7 +1742,9 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+
+                }
               }
             }
           },
@@ -1353,7 +1778,10 @@
           }
         },
         "type": "object",
-        "required": ["productId", "quantity"],
+        "required": [
+          "productId",
+          "quantity"
+        ],
         "title": "AddToCartRequest"
       },
       "Body_checkout_api_v1_checkout_post": {
@@ -1396,7 +1824,10 @@
           }
         },
         "type": "object",
-        "required": ["status", "message"],
+        "required": [
+          "status",
+          "message"
+        ],
         "title": "ErrorResponse"
       },
       "HTTPValidationError": {
@@ -1443,7 +1874,10 @@
           }
         },
         "type": "object",
-        "required": ["status", "cancellationReason"],
+        "required": [
+          "status",
+          "cancellationReason"
+        ],
         "title": "OrderStatusUpdate"
       },
       "SuccessResponse": {
@@ -1458,7 +1892,10 @@
           }
         },
         "type": "object",
-        "required": ["status", "message"],
+        "required": [
+          "status",
+          "message"
+        ],
         "title": "SuccessResponse"
       },
       "ValidationError": {
@@ -1487,7 +1924,11 @@
           }
         },
         "type": "object",
-        "required": ["loc", "msg", "type"],
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
         "title": "ValidationError"
       }
     },
@@ -1496,7 +1937,9 @@
         "type": "oauth2",
         "flows": {
           "password": {
-            "scopes": {},
+            "scopes": {
+
+            },
             "tokenUrl": "/token"
           }
         }

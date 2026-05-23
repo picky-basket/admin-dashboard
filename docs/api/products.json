@@ -14,7 +14,9 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+
+                }
               }
             }
           }
@@ -23,7 +25,9 @@
     },
     "/api/v1/product/category/add": {
       "post": {
-        "tags": ["Product Category"],
+        "tags": [
+          "Product Category"
+        ],
         "summary": "Add Category",
         "operationId": "add_category_api_v1_product_category_add_post",
         "requestBody": {
@@ -165,7 +169,9 @@
     },
     "/api/v1/product/category/{categoryId}": {
       "patch": {
-        "tags": ["Product Category"],
+        "tags": [
+          "Product Category"
+        ],
         "summary": "Update Category",
         "operationId": "update_category_api_v1_product_category__categoryId__patch",
         "security": [
@@ -333,7 +339,9 @@
         }
       },
       "delete": {
-        "tags": ["Product Category"],
+        "tags": [
+          "Product Category"
+        ],
         "summary": "Delete Category",
         "operationId": "delete_category_api_v1_product_category__categoryId__delete",
         "security": [
@@ -452,7 +460,9 @@
     },
     "/api/v1/product/categories": {
       "get": {
-        "tags": ["Product Category"],
+        "tags": [
+          "Product Category"
+        ],
         "summary": "Get Categories",
         "operationId": "get_categories_api_v1_product_categories_get",
         "responses": {
@@ -533,7 +543,9 @@
     },
     "/api/v1/product/add": {
       "post": {
-        "tags": ["Product"],
+        "tags": [
+          "Product"
+        ],
         "summary": "Add Product",
         "operationId": "add_product_api_v1_product_add_post",
         "requestBody": {
@@ -675,7 +687,9 @@
     },
     "/api/v1/product/{productId}/update": {
       "patch": {
-        "tags": ["Product"],
+        "tags": [
+          "Product"
+        ],
         "summary": "Update Product",
         "operationId": "update_product_api_v1_product__productId__update_patch",
         "security": [
@@ -833,7 +847,9 @@
     },
     "/api/v1/product/{productId}": {
       "delete": {
-        "tags": ["Product"],
+        "tags": [
+          "Product"
+        ],
         "summary": "Delete Product",
         "operationId": "delete_product_api_v1_product__productId__delete",
         "security": [
@@ -942,7 +958,9 @@
         }
       },
       "get": {
-        "tags": ["Product"],
+        "tags": [
+          "Product"
+        ],
         "summary": "Get Product By Id",
         "operationId": "get_product_by_id_api_v1_product__productId__get",
         "parameters": [
@@ -966,63 +984,42 @@
                 },
                 "example": {
                   "status": "Success",
-                  "data": [
-                    {
-                      "id": "string",
-                      "name": "string",
-                      "description": "string",
-                      "brand": "string",
-                      "price": 0,
-                      "currency": "string",
-                      "unit": "string",
-                      "categoryId": "string",
-                      "categoryName": "string",
-                      "tags": ["string"],
-                      "imageUrl": "string",
-                      "createdAt": "2026-03-01T23:14:41.662268+00:00"
-                    }
-                  ]
+                  "data": {
+                    "price": 100,
+                    "isAvailable": true,
+                    "updatedAt": "2026-04-18T20:19:06.636467+00:00",
+                    "currency": "GHS",
+                    "productId": "6YUZmN3n4hCyrILAGMtZ",
+                    "imageUrl": "https://storage.googleapis.com/picky-basket.firebasestorage.app/uploads/products/2d982139-65c7-462f-8df1-8bf2652d34e5",
+                    "description": "Fresh Chicken Thighs",
+                    "unit": "kg",
+                    "categoryId": "R3kb8jufWp8GsKTO8J95",
+                    "tags": [
+                      "meat",
+                      "chicken",
+                      "fowl",
+                      "poulty"
+                    ],
+                    "createdAt": "2026-03-05T18:31:38.988847+00:00",
+                    "categoryName": "Meat & Poultry",
+                    "name": "Chicken Thighs",
+                    "id": "6YUZmN3n4hCyrILAGMtZ"
+                  }
                 }
               }
             }
           },
-          "401": {
-            "description": "Unauthorized",
+          "404": {
+            "description": "Not Found",
             "content": {
               "application/json": {
                 "examples": {
-                  "Unauthorized": {
+                  "Product Not Found": {
                     "value": {
                       "status": "Failed",
-                      "message": "Invalid credentials."
-                    }
-                  },
-                  "Expired Token": {
-                    "value": {
-                      "status": "Failed",
-                      "message": "Refresh token is invalid or expired."
-                    }
-                  },
-                  "Not authenticated": {
-                    "value": {
-                      "status": "Failed",
-                      "message": "Not authenticated"
+                      "message": "Product not found."
                     }
                   }
-                },
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "application/json": {
-                "example": {
-                  "status": "Failed",
-                  "message": "Access denied."
                 },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
@@ -1045,7 +1042,9 @@
     },
     "/api/v1/product/inventory/{productId}/update": {
       "patch": {
-        "tags": ["Product"],
+        "tags": [
+          "Product"
+        ],
         "summary": "Update Inventory Stock",
         "operationId": "update_inventory_stock_api_v1_product_inventory__productId__update_patch",
         "security": [
@@ -1190,7 +1189,9 @@
     },
     "/api/v1/products": {
       "get": {
-        "tags": ["Product"],
+        "tags": [
+          "Product"
+        ],
         "summary": "Get Products",
         "operationId": "get_products_api_v1_products_get",
         "parameters": [
@@ -1311,7 +1312,7 @@
             "description": "asc or desc"
           },
           {
-            "name": "cursor_created_at",
+            "name": "cursorCreatedAt",
             "in": "query",
             "required": false,
             "schema": {
@@ -1323,11 +1324,13 @@
                   "type": "null"
                 }
               ],
-              "title": "Cursor Created At"
-            }
+              "description": "Cursor for pagination.",
+              "title": "Cursorcreatedat"
+            },
+            "description": "Cursor for pagination."
           },
           {
-            "name": "cursor_id",
+            "name": "cursorId",
             "in": "query",
             "required": false,
             "schema": {
@@ -1339,11 +1342,13 @@
                   "type": "null"
                 }
               ],
-              "title": "Cursor Id"
-            }
+              "description": "Cursor ID for pagination",
+              "title": "Cursorid"
+            },
+            "description": "Cursor ID for pagination"
           },
           {
-            "name": "page_size",
+            "name": "pageSize",
             "in": "query",
             "required": false,
             "schema": {
@@ -1351,7 +1356,7 @@
               "maximum": 100,
               "minimum": 1,
               "default": 10,
-              "title": "Page Size"
+              "title": "Pagesize"
             }
           }
         ],
@@ -1365,66 +1370,75 @@
                 },
                 "example": {
                   "status": "Success",
-                  "data": [
-                    {
-                      "id": "string",
-                      "name": "string",
-                      "description": "string",
-                      "brand": "string",
-                      "price": 0,
-                      "currency": "string",
-                      "unit": "string",
-                      "categoryId": "string",
-                      "categoryName": "string",
-                      "tags": ["string"],
-                      "imageUrl": "string",
-                      "createdAt": "2026-03-01T23:14:41.662268+00:00"
-                    }
-                  ]
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "examples": {
-                  "Unauthorized": {
-                    "value": {
-                      "status": "Failed",
-                      "message": "Invalid credentials."
-                    }
-                  },
-                  "Expired Token": {
-                    "value": {
-                      "status": "Failed",
-                      "message": "Refresh token is invalid or expired."
-                    }
-                  },
-                  "Not authenticated": {
-                    "value": {
-                      "status": "Failed",
-                      "message": "Not authenticated"
+                  "data": {
+                    "products": [
+                      {
+                        "price": 50,
+                        "isAvailable": true,
+                        "updatedAt": "2026-04-18T20:20:45.197948+00:00",
+                        "currency": "GHS",
+                        "productId": "Iq6JHmAn8vsj0c8Flffx",
+                        "imageUrl": "https://storage.googleapis.com/picky-basket.firebasestorage.app/uploads/products/40d7a6e3-f7a9-4c57-a0dc-0a1694604ded",
+                        "description": "Raw beef",
+                        "unit": "kg",
+                        "categoryId": "R3kb8jufWp8GsKTO8J95",
+                        "createdAt": "2026-04-16T17:48:54.848607+00:00",
+                        "tags": [
+                          "meat"
+                        ],
+                        "categoryName": "Meat & Poultry",
+                        "name": "Beef",
+                        "id": "Iq6JHmAn8vsj0c8Flffx"
+                      },
+                      {
+                        "price": 25,
+                        "isAvailable": true,
+                        "updatedAt": "2026-04-18T20:25:56.020654+00:00",
+                        "currency": "GHS",
+                        "productId": "V8eMV22siK1b2DGpZivq",
+                        "imageUrl": "https://storage.googleapis.com/picky-basket.firebasestorage.app/uploads/products/1ae637c6-cdff-414b-a614-49b57a67db47",
+                        "createdAt": "2026-03-23T23:36:08.044950+00:00",
+                        "unit": "piece",
+                        "categoryId": "x0BqqVC2Miz854nRArcN",
+                        "description": "Fresh Watermelon",
+                        "tags": [
+                          "fruit"
+                        ],
+                        "categoryName": "Fruits",
+                        "name": "Watermelon",
+                        "id": "V8eMV22siK1b2DGpZivq"
+                      },
+                      {
+                        "price": 100,
+                        "isAvailable": true,
+                        "updatedAt": "2026-04-18T20:19:06.636467+00:00",
+                        "currency": "GHS",
+                        "productId": "6YUZmN3n4hCyrILAGMtZ",
+                        "imageUrl": "https://storage.googleapis.com/picky-basket.firebasestorage.app/uploads/products/2d982139-65c7-462f-8df1-8bf2652d34e5",
+                        "description": "Fresh Chicken Thighs",
+                        "unit": "kg",
+                        "categoryId": "R3kb8jufWp8GsKTO8J95",
+                        "tags": [
+                          "meat",
+                          "chicken",
+                          "fowl",
+                          "poulty"
+                        ],
+                        "createdAt": "2026-03-05T18:31:38.988847+00:00",
+                        "categoryName": "Meat & Poultry",
+                        "name": "Chicken Thighs",
+                        "id": "6YUZmN3n4hCyrILAGMtZ"
+                      }
+                    ],
+                    "pagination": {
+                      "pageSize": 10,
+                      "nextCursor": {
+                        "cursorCreatedAt": "2026-04-18T22:14:55.073859",
+                        "cursorId": "6YUZmN3n4hCyrILAGMtZ"
+                      },
+                      "hasMore": true
                     }
                   }
-                },
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "application/json": {
-                "example": {
-                  "status": "Failed",
-                  "message": "Access denied."
-                },
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -1444,7 +1458,9 @@
     },
     "/api/v1/upload/url": {
       "get": {
-        "tags": ["Uploads"],
+        "tags": [
+          "Uploads"
+        ],
         "summary": "Get Upload Url",
         "operationId": "get_upload_url_api_v1_upload_url_get",
         "security": [
@@ -1580,7 +1596,9 @@
     },
     "/api/v1/dish/add": {
       "post": {
-        "tags": ["Dish"],
+        "tags": [
+          "Dish"
+        ],
         "summary": "Add Dish",
         "operationId": "add_dish_api_v1_dish_add_post",
         "requestBody": {
@@ -1727,10 +1745,12 @@
       }
     },
     "/api/v1/dish/{dishId}/update": {
-      "put": {
-        "tags": ["Dish"],
+      "patch": {
+        "tags": [
+          "Dish"
+        ],
         "summary": "Update Dish",
-        "operationId": "update_dish_api_v1_dish__dishId__update_put",
+        "operationId": "update_dish_api_v1_dish__dishId__update_patch",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -1752,7 +1772,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/DishCreate"
+                "$ref": "#/components/schemas/DishUpdate"
               }
             }
           }
@@ -1887,12 +1907,14 @@
     },
     "/api/v1/dish/list": {
       "get": {
-        "tags": ["Dish"],
+        "tags": [
+          "Dish"
+        ],
         "summary": "Get Dishes",
         "operationId": "get_dishes_api_v1_dish_list_get",
         "parameters": [
           {
-            "name": "page_size",
+            "name": "pageSize",
             "in": "query",
             "required": false,
             "schema": {
@@ -1901,7 +1923,7 @@
               "minimum": 1,
               "description": "Number of items per page",
               "default": 10,
-              "title": "Page Size"
+              "title": "Pagesize"
             },
             "description": "Number of items per page"
           },
@@ -1923,6 +1945,24 @@
               "title": "Cursorcreatedat"
             },
             "description": "Cursor for pagination"
+          },
+          {
+            "name": "cursorId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Cursor ID for pagination",
+              "title": "Cursorid"
+            },
+            "description": "Cursor ID for pagination"
           }
         ],
         "responses": {
@@ -1939,42 +1979,36 @@
                     {
                       "products": [
                         {
-                          "quantity": 2,
-                          "unit": "kg",
+                          "quantity": 3,
                           "price": 100,
+                          "unit": "kg",
                           "productName": "Chicken Thighs",
                           "productId": "6YUZmN3n4hCyrILAGMtZ"
+                        },
+                        {
+                          "quantity": 1,
+                          "price": 50,
+                          "unit": "kg",
+                          "productName": "Beef",
+                          "productId": "Iq6JHmAn8vsj0c8Flffx"
                         }
                       ],
-                      "dishId": "1UQURmPPUKXi4QlPPxJy",
-                      "createdAt": "2026-04-15T00:28:21.429401+00:00",
-                      "imageUrl": "https://storage.googleapis.com/picky-basket.firebasestorage.app/uploads/dishes/507808f5-10c7-4e85-a6aa-1ed0ad0540af?Expires=1776216564&GoogleAccessId=firebase-adminsdk-fbsvc%40picky-basket.iam.gserviceaccount.com&Signature=Dac0khz7KHUFONc24nwkpei6EgK2nact4wzFdrXzCW36bWwMdpyp5NFK8jc0UYKu%2Fi2vfYiCG190UjRN4IMt76HiJVB1wMOO8gml8yukgEyZucxmzNv8qh4IJFtLZy2T8LbdwWZlCBX3xoLCu1HB36RBq68drIveXs2vT%2BgwKyEfBcFl1DNXl64iSSFnvkqHSAV9c5vbYjsnLlFqJSNKgruYAOPuWoI5ckrgejKzO883poIfCvHECuQSNryYu4cRUh5sX1UJLaGGrcE3iLF9VuTuCvn69QiPst11vIYVVlN4DNrNuqUHxJPlLAOLYFIMWPAXhW9J%2FNLAt0F2%2B7MgIQ%3D%3D",
+                      "dishId": "UWEkkkqBqDE09Jpq9b6d",
+                      "updatedAt": "2026-04-18T21:19:33.447901+00:00",
+                      "createdAt": "2026-04-18T21:16:34.194337+00:00",
+                      "imageUrl": "https://storage.googleapis.com/picky-basket.firebasestorage.app/uploads/dishes/61f883f9-7fce-41e3-ad8b-0699e85298e0",
                       "name": "Jollof Rice",
-                      "id": "1UQURmPPUKXi4QlPPxJy"
+                      "id": "UWEkkkqBqDE09Jpq9b6d"
                     }
                   ],
                   "pagination": {
                     "pageSize": 10,
-                    "hasMore": false
+                    "nextCursor": {
+                      "cursorCreatedAt": "2026-04-18T22:14:55.073859",
+                      "cursorId": "tCxtxmllrTx6bGX7jTIr"
+                    },
+                    "hasMore": true
                   }
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "application/json": {
-                "examples": {
-                  "Dish Not Found": {
-                    "value": {
-                      "status": "Failed",
-                      "message": "Dish not found."
-                    }
-                  }
-                },
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -1994,7 +2028,9 @@
     },
     "/api/v1/dish/{dishId}": {
       "get": {
-        "tags": ["Dish"],
+        "tags": [
+          "Dish"
+        ],
         "summary": "Get Dish By Id",
         "operationId": "get_dish_by_id_api_v1_dish__dishId__get",
         "parameters": [
@@ -2018,27 +2054,26 @@
                 },
                 "example": {
                   "status": "Success",
-                  "data": [
-                    {
-                      "products": [
-                        {
-                          "quantity": 2,
-                          "unit": "kg",
-                          "price": 100,
-                          "productName": "Chicken Thighs",
-                          "productId": "6YUZmN3n4hCyrILAGMtZ"
-                        }
-                      ],
-                      "dishId": "1UQURmPPUKXi4QlPPxJy",
-                      "createdAt": "2026-04-15T00:28:21.429401+00:00",
-                      "imageUrl": "https://storage.googleapis.com/picky-basket.firebasestorage.app/uploads/dishes/507808f5-10c7-4e85-a6aa-1ed0ad0540af?Expires=1776216564&GoogleAccessId=firebase-adminsdk-fbsvc%40picky-basket.iam.gserviceaccount.com&Signature=Dac0khz7KHUFONc24nwkpei6EgK2nact4wzFdrXzCW36bWwMdpyp5NFK8jc0UYKu%2Fi2vfYiCG190UjRN4IMt76HiJVB1wMOO8gml8yukgEyZucxmzNv8qh4IJFtLZy2T8LbdwWZlCBX3xoLCu1HB36RBq68drIveXs2vT%2BgwKyEfBcFl1DNXl64iSSFnvkqHSAV9c5vbYjsnLlFqJSNKgruYAOPuWoI5ckrgejKzO883poIfCvHECuQSNryYu4cRUh5sX1UJLaGGrcE3iLF9VuTuCvn69QiPst11vIYVVlN4DNrNuqUHxJPlLAOLYFIMWPAXhW9J%2FNLAt0F2%2B7MgIQ%3D%3D",
-                      "name": "Jollof Rice",
-                      "id": "1UQURmPPUKXi4QlPPxJy"
-                    }
-                  ],
-                  "pagination": {
-                    "pageSize": 10,
-                    "hasMore": false
+                  "data": {
+                    "price": 100,
+                    "isAvailable": true,
+                    "updatedAt": "2026-04-18T20:19:06.636467+00:00",
+                    "currency": "GHS",
+                    "productId": "6YUZmN3n4hCyrILAGMtZ",
+                    "imageUrl": "https://storage.googleapis.com/picky-basket.firebasestorage.app/uploads/products/2d982139-65c7-462f-8df1-8bf2652d34e5",
+                    "description": "Fresh Chicken Thighs",
+                    "unit": "kg",
+                    "categoryId": "R3kb8jufWp8GsKTO8J95",
+                    "tags": [
+                      "meat",
+                      "chicken",
+                      "fowl",
+                      "poulty"
+                    ],
+                    "createdAt": "2026-03-05T18:31:38.988847+00:00",
+                    "categoryName": "Meat & Poultry",
+                    "name": "Chicken Thighs",
+                    "id": "6YUZmN3n4hCyrILAGMtZ"
                   }
                 }
               }
@@ -2077,7 +2112,9 @@
     },
     "/api/v1/dish/{dishId}/delete": {
       "delete": {
-        "tags": ["Dish"],
+        "tags": [
+          "Dish"
+        ],
         "summary": "Delete Dish",
         "operationId": "delete_dish_api_v1_dish__dishId__delete_delete",
         "security": [
@@ -2101,7 +2138,9 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+
+                }
               }
             }
           },
@@ -2123,7 +2162,10 @@
     "schemas": {
       "AllowedTypes": {
         "type": "string",
-        "enum": ["image/jpeg", "image/png"],
+        "enum": [
+          "image/jpeg",
+          "image/png"
+        ],
         "title": "AllowedTypes"
       },
       "Body_add_category_api_v1_product_category_add_post": {
@@ -2138,7 +2180,10 @@
           }
         },
         "type": "object",
-        "required": ["name", "imagePath"],
+        "required": [
+          "name",
+          "imagePath"
+        ],
         "title": "Body_add_category_api_v1_product_category_add_post"
       },
       "Body_add_product_api_v1_product_add_post": {
@@ -2211,7 +2256,14 @@
           }
         },
         "type": "object",
-        "required": ["name", "price", "currency", "unit", "categoryId", "imagePath"],
+        "required": [
+          "name",
+          "price",
+          "currency",
+          "unit",
+          "categoryId",
+          "imagePath"
+        ],
         "title": "Body_add_product_api_v1_product_add_post"
       },
       "Body_update_category_api_v1_product_category__categoryId__patch": {
@@ -2347,7 +2399,9 @@
       },
       "CurrencyEnum": {
         "type": "string",
-        "enum": ["GHS"],
+        "enum": [
+          "GHS"
+        ],
         "title": "CurrencyEnum"
       },
       "DishCreate": {
@@ -2369,7 +2423,11 @@
           }
         },
         "type": "object",
-        "required": ["name", "imagePath", "products"],
+        "required": [
+          "name",
+          "imagePath",
+          "products"
+        ],
         "title": "DishCreate"
       },
       "DishProduct": {
@@ -2384,8 +2442,53 @@
           }
         },
         "type": "object",
-        "required": ["productId", "quantity"],
+        "required": [
+          "productId",
+          "quantity"
+        ],
         "title": "DishProduct"
+      },
+      "DishUpdate": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "imagePath": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Imagepath"
+          },
+          "products": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/DishProduct"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Products"
+          }
+        },
+        "type": "object",
+        "title": "DishUpdate"
       },
       "ErrorResponse": {
         "properties": {
@@ -2399,7 +2502,10 @@
           }
         },
         "type": "object",
-        "required": ["status", "message"],
+        "required": [
+          "status",
+          "message"
+        ],
         "title": "ErrorResponse"
       },
       "HTTPValidationError": {
@@ -2425,7 +2531,9 @@
           }
         },
         "type": "object",
-        "required": ["stockQuantity"],
+        "required": [
+          "stockQuantity"
+        ],
         "title": "StockUpdateRequest"
       },
       "SuccessResponse": {
@@ -2440,7 +2548,10 @@
           }
         },
         "type": "object",
-        "required": ["status", "message"],
+        "required": [
+          "status",
+          "message"
+        ],
         "title": "SuccessResponse"
       },
       "UnitEnum": {
@@ -2463,7 +2574,11 @@
       },
       "UploadContext": {
         "type": "string",
-        "enum": ["product_image", "category_image", "dish_image"],
+        "enum": [
+          "product_image",
+          "category_image",
+          "dish_image"
+        ],
         "title": "UploadContext"
       },
       "ValidationError": {
@@ -2492,7 +2607,11 @@
           }
         },
         "type": "object",
-        "required": ["loc", "msg", "type"],
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
         "title": "ValidationError"
       }
     },
@@ -2501,7 +2620,9 @@
         "type": "oauth2",
         "flows": {
           "password": {
-            "scopes": {},
+            "scopes": {
+
+            },
             "tokenUrl": "/token"
           }
         }

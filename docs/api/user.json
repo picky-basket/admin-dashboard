@@ -14,7 +14,9 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+
+                }
               }
             }
           }
@@ -23,7 +25,9 @@
     },
     "/api/v1/user/{userId}": {
       "get": {
-        "tags": ["Profile"],
+        "tags": [
+          "Profile"
+        ],
         "summary": "Get User Profile",
         "operationId": "get_user_profile_api_v1_user__userId__get",
         "security": [
@@ -55,14 +59,18 @@
                     "value": {
                       "status": "Success",
                       "data": {
-                        "userId": "nzMn1GjJzYbJZdz0dsyiInnmLkL2",
-                        "lastActive": "2026-04-19T21:38:02.385491+00:00",
-                        "phoneNumber": "+233200585542",
-                        "email": "cbaragbor@gmail.com",
-                        "isEmployee": false,
+                        "isDeleted": false,
+                        "name": "Collins Makafui Baragbor",
                         "role": "individual",
+                        "userId": "nzMn1GjJzYbJZdz0dsyiInnmLkL2",
+                        "isEmployee": false,
                         "createdAt": "2026-02-02T00:47:30.222295+00:00",
-                        "name": "Collins Makafui Baragbor"
+                        "email": "cbaragbor@gmail.com",
+                        "phoneNumber": "+233200585542",
+                        "lastActive": "2026-04-22T23:27:10.607176+00:00",
+                        "updatedBy": "nzMn1GjJzYbJZdz0dsyiInnmLkL2",
+                        "defaultAddressId": "UerFfgOiU6kWMbKJeJpU",
+                        "updatedAt": "2026-04-22T23:53:29.937242+00:00"
                       }
                     }
                   }
@@ -159,7 +167,9 @@
         }
       },
       "patch": {
-        "tags": ["Profile"],
+        "tags": [
+          "Profile"
+        ],
         "summary": "Update User Profile",
         "operationId": "update_user_profile_api_v1_user__userId__patch",
         "security": [
@@ -216,6 +226,12 @@
                     "value": {
                       "status": "Failed",
                       "message": "No valid fields to update."
+                    }
+                  },
+                  "Invalid phone number": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Invalid phone number."
                     }
                   }
                 },
@@ -312,11 +328,146 @@
             }
           }
         }
+      },
+      "delete": {
+        "tags": [
+          "Profile"
+        ],
+        "summary": "Deactivate User",
+        "operationId": "deactivate_user_api_v1_user__userId__delete",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Userid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "Success": {
+                    "value": {
+                      "status": "Success",
+                      "message": "Account deactivated successfully."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "User already deactivated": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "User already deactivated."
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Unauthorized": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Invalid credentials."
+                    }
+                  },
+                  "Expired Token": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Refresh token is invalid or expired."
+                    }
+                  },
+                  "Not authenticated": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Not authenticated"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "User Not Found": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "User not found."
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "Failed",
+                  "message": "Failed to deactivate account."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/api/v1/user/{userId}/addresses": {
       "get": {
-        "tags": ["Shipping Addresses"],
+        "tags": [
+          "Shipping Addresses"
+        ],
         "summary": "Get Shipping Addresses",
         "operationId": "get_shipping_addresses_api_v1_user__userId__addresses_get",
         "security": [
@@ -443,7 +594,9 @@
     },
     "/api/v1/user/{userId}/addresses/add": {
       "post": {
-        "tags": ["Shipping Addresses"],
+        "tags": [
+          "Shipping Addresses"
+        ],
         "summary": "Add Shipping Address",
         "operationId": "add_shipping_address_api_v1_user__userId__addresses_add_post",
         "security": [
@@ -597,7 +750,9 @@
     },
     "/api/v1/user/{userId}/addresses/{addressId}": {
       "patch": {
-        "tags": ["Shipping Addresses"],
+        "tags": [
+          "Shipping Addresses"
+        ],
         "summary": "Update Address",
         "operationId": "update_address_api_v1_user__userId__addresses__addressId__patch",
         "security": [
@@ -761,7 +916,9 @@
         }
       },
       "delete": {
-        "tags": ["Shipping Addresses"],
+        "tags": [
+          "Shipping Addresses"
+        ],
         "summary": "Delete Address",
         "operationId": "delete_address_api_v1_user__userId__addresses__addressId__delete",
         "security": [
@@ -899,7 +1056,9 @@
     },
     "/api/v1/user/{userId}/addresses/{addressId}/set-default": {
       "patch": {
-        "tags": ["Shipping Addresses"],
+        "tags": [
+          "Shipping Addresses"
+        ],
         "summary": "Set Default Address",
         "operationId": "set_default_address_api_v1_user__userId__addresses__addressId__set_default_patch",
         "security": [
@@ -1232,7 +1391,10 @@
           }
         },
         "type": "object",
-        "required": ["status", "message"],
+        "required": [
+          "status",
+          "message"
+        ],
         "title": "ErrorResponse"
       },
       "HTTPValidationError": {
@@ -1260,7 +1422,10 @@
           }
         },
         "type": "object",
-        "required": ["status", "message"],
+        "required": [
+          "status",
+          "message"
+        ],
         "title": "SuccessResponse"
       },
       "UpdateUserProfile": {
@@ -1363,7 +1528,11 @@
           }
         },
         "type": "object",
-        "required": ["loc", "msg", "type"],
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
         "title": "ValidationError"
       }
     },
@@ -1372,7 +1541,9 @@
         "type": "oauth2",
         "flows": {
           "password": {
-            "scopes": {},
+            "scopes": {
+
+            },
             "tokenUrl": "/token"
           }
         }

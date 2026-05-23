@@ -48,11 +48,136 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
-
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "Hubtel": {
+                    "value": {
+                      "status": "Success",
+                      "message": "Payment initialized successfully.",
+                      "data": {
+                        "provider": "hubtel",
+                        "url": "https://pay.hubtel.com/c85852dfca3d48b9bca60e31e54b8b6e",
+                        "reference": "PB-1E0253D6-cab9"
+                      }
+                    }
+                  },
+                  "Paystack": {
+                    "value": {
+                      "status": "Success",
+                      "message": "Payment initialized successfully.",
+                      "data": {
+                        "provider": "paystack",
+                        "url": "https://checkout.paystack.com/4qyrczeftwgmjm3",
+                        "access_code": "4qyrczeftwgmjm3",
+                        "reference": "PB-F5012512-3bec"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Payment Already Processed": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Payment already processed."
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Unauthorized": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Invalid credentials."
+                    }
+                  },
+                  "Expired Token": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Refresh token is invalid or expired."
+                    }
+                  },
+                  "Not authenticated": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Not authenticated"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "Failed",
+                  "message": "Access denied."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Order Not Found": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Order not found."
+                    }
+                  },
+                  "User Not Found": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "User not found."
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "Failed",
+                  "message": "Failed to initialize payment."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -94,6 +219,24 @@
   },
   "components": {
     "schemas": {
+      "ErrorResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "message"
+        ],
+        "title": "ErrorResponse"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -106,6 +249,24 @@
         },
         "type": "object",
         "title": "HTTPValidationError"
+      },
+      "SuccessResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "message"
+        ],
+        "title": "SuccessResponse"
       },
       "ValidationError": {
         "properties": {
