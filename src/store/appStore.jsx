@@ -1,10 +1,12 @@
 import { createContext, useContext, useMemo, useState } from 'react';
 import { mockCategories, mockCustomers, mockOrders, mockProducts } from '../data/mockData.js';
+import { clearTokens, hasTokens, setTokens as storeSetTokens } from '../api/tokenStore.js';
 
 const AppStoreContext = createContext(null);
 
 export function AppStoreProvider({ children }) {
-  const [loggedIn, setLoggedIn] = useState(false);
+  // Initialize loggedIn from persisted tokens so page refresh keeps session alive
+  const [loggedIn, setLoggedIn] = useState(() => hasTokens());
   const [darkMode, setDarkMode] = useState(false);
 
   const [categories, setCategories] = useState(mockCategories);
@@ -22,9 +24,21 @@ export function AppStoreProvider({ children }) {
     [orders]
   );
 
+  const setTokens = (tokens) => {
+    storeSetTokens(tokens);
+    setLoggedIn(true);
+  };
+
+  const signOut = () => {
+    clearTokens();
+    setLoggedIn(false);
+  };
+
   const value = {
     loggedIn,
     setLoggedIn,
+    setTokens,
+    signOut,
     darkMode,
     setDarkMode,
     categories,

@@ -4,13 +4,13 @@ import { useAppStore } from '../../store/appStore.jsx';
 import { useBreakpoint } from '../../hooks/useBreakpoint.js';
 
 export function AppLayout() {
-  const { darkMode, setDarkMode, pendingOrders, setLoggedIn } = useAppStore();
+  const { darkMode, setDarkMode, pendingOrders, signOut } = useAppStore();
   const { isMobile } = useBreakpoint();
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (state) => state.location.pathname });
 
   const handleLogout = () => {
-    setLoggedIn(false);
+    signOut();
     navigate({ to: '/login' });
   };
 

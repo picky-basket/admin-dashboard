@@ -5,6 +5,7 @@ import { useAppStore } from '../store/appStore.jsx';
 import { DARK, LIGHT } from '../components/extracted/theme.js';
 import Button from '../components/extracted/ui/Button.jsx';
 import Field from '../components/extracted/ui/Field.jsx';
+import { loginUser } from '../api/services/auth.ts';
 
 const Btn = Button;
 
@@ -15,20 +16,22 @@ function LoginExtracted({ onLogin, dark }) {
   const [err, setErr] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const go = () => {
+  const go = async () => {
     if (!email || !pass) {
       setErr('Enter email and password.');
       return;
     }
     setLoading(true);
     setErr('');
-    setTimeout(() => {
-      if (email === 'admin@pickybasket.com' && pass === 'picky2024') onLogin();
-      else {
-        setErr('Wrong email or password.');
-        setLoading(false);
-      }
-    }, 600);
+    try {
+      const tokens = await loginUser({ email, password: pass });
+      onLogin(tokens);
+    } catch (error) {
+      const message = error.response?.data?.message || 'Wrong email or password.';
+      setErr(message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -43,9 +46,6 @@ function LoginExtracted({ onLogin, dark }) {
         <Field label="Password" value={pass} onChange={setPass} type="password" placeholder="••••••••" />
         {err ? <div style={{ fontSize: 13, color: T.red, padding: '8px 12px', background: T.redL, borderRadius: 8, marginBottom: 12, fontWeight: 500 }}>{err}</div> : null}
         <Btn full onClick={go} disabled={loading}>{loading ? 'Signing in...' : 'Sign In'}</Btn>
-        <div onClick={() => { setEmail('admin@pickybasket.com'); setPass('picky2024'); onLogin(); }} style={{ marginTop: 12, padding: 11, background: T.tealLt, borderRadius: 10, fontSize: 12, color: T.teal, textAlign: 'center', cursor: 'pointer', border: `1px dashed ${T.teal}`, fontWeight: 700 }}>
-          👆 Demo: Click to sign in instantly
-        </div>
       </div>
     </div>
   );
@@ -54,10 +54,10 @@ function LoginExtracted({ onLogin, dark }) {
 export default function LoginPage() {
   const navigate = useNavigate();
   const search = useSearch({ from: '/login' });
-  const { darkMode, setLoggedIn } = useAppStore();
+  const { darkMode, setTokens } = useAppStore();
 
-  const handleLogin = () => {
-    setLoggedIn(true);
+  const handleLogin = (tokens) => {
+    setTokens(tokens);
     const redirect = typeof search?.redirect === 'string' ? search.redirect : '/';
     navigate({ to: redirect.startsWith('/') ? redirect : '/' });
   };
