@@ -1,7 +1,8 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useBreakpoint } from '../hooks/useBreakpoint.js';
 import { useAppStore } from '../store/appStore.jsx';
 import { useExtractedTheme } from '../components/extracted/theme.js';
+import { useOrders } from '../api/hooks/useOrders.ts';
 import Button from '../components/extracted/ui/Button.jsx';
 import Card from '../components/extracted/ui/Card.jsx';
 import EmptyState from '../components/extracted/ui/EmptyState.jsx';
@@ -23,8 +24,8 @@ function OrdersExtracted({ orders, setOrders }) {
   const [open, setOpen] = useState(null);
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState('newest');
-  const tabs = ['All', 'Pending', 'Packing', 'Delivering', 'Delivered', 'Cancelled'];
-  const next = { Pending: 'Packing', Packing: 'Delivering', Delivering: 'Delivered' };
+  const tabs = ['All', 'Pending', 'Confirmed', 'Processing', 'Shipped', 'Delivered', 'Cancelled', 'Refunded'];
+  const next = { Pending: 'Confirmed', Confirmed: 'Processing', Processing: 'Shipped', Shipped: 'Delivered' };
 
   const normalizedOrders = useMemo(
     () =>
@@ -182,6 +183,58 @@ function OrdersExtracted({ orders, setOrders }) {
 }
 
 export default function OrdersPage() {
-  const { orders, setOrders } = useAppStore();
+  const { setOrders } = useAppStore();
+  const { data: ordersData, isLoading, error } = useOrders();
+
+  useEffect(() => {
+    if (ordersData) {
+      // Normalize API order structure to match local expectations
+      const normalized = ordersData.map((o) => {
+        const statusMap = {
+          pending: 'Pending',
+          confirmed: 'Confirmed',
+          processing: 'Processing',
+          shipped: 'Shipped',
+          delivered: 'Delivered',
+          cancelled: 'Cancelled',
+          refunded: 'Refunded'
+        };
+        return {
+          ...o,
+          id: o.orderId,
+          customer: o.customerName || 'Unknown',
+          phone: o.customerPhone || '',
+          address: o.shippingAddress?.streetAddress || '',
+          time: o.createdAt || new Date().toISOString(),
+          status: statusMap[o.status] || 'Pending',
+          paid: o.paymentStatus === 'paid',
+          method: o.paymentMethod || 'Unknown',
+          subtotal: Math.round((o.total || 0) * 0.95), // Estimate subtotal (80% of total for fee calculation)
+          fee: Math.round((o.total || 0) * 0.05), // Estimate fee (20% of total)
+          items: o.items || []
+        };
+      });
+      setOrders(normalized);
+    }
+  }, [ordersData, setOrders]);
+
+  const { orders } = useAppStore();
+
+  if (isLoading) {
+    return (
+      <div style={{ padding: 20, textAlign: 'center', color: '#999' }}>
+        Loading orders...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div style={{ padding: 20, textAlign: 'center', color: '#d32f2f' }}>
+        Failed to load orders. Using local data.
+      </div>
+    );
+  }
+
   return <OrdersExtracted orders={orders} setOrders={setOrders} />;
 }

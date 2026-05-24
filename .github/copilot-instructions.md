@@ -86,33 +86,84 @@ admin-dashboard/
 └── README.md
 ```
 
-## State Rules
+## State Management & Data Fetching
 
-- Use `AppStoreProvider` and `useAppStore()` for cross-page dashboard state.
-- Keep UI-only local state inside individual page/components.
-- Do not introduce API fetching in the store yet; keep using `src/data/mockData.js`.
+### Context API (AppStore)
+- **Use for**: Cross-page dashboard state (loggedIn, darkMode, user info)
+- **Location**: `src/store/appStore.jsx`
+- **Pattern**: Context + useState
+- **Exports**: `useAppStore()` hook for consumption
 
-## API Documentation Reference (No Integration Yet)
+### TanStack Query
+- **Use for**: Server state and API data fetching (products, orders, customers, etc.)
+- **Location**: Query hooks in `src/api/hooks/`
+- **Pattern**: `useQuery` for GET requests, `useMutation` for POST/PATCH/DELETE
+- **Query Keys**: Structured arrays like `['products']`, `['orders']`, `['users', userId]`
+- **Cache Strategy**: 
+  - Products/categories: 5-10 min staleTime
+  - Orders/customers: 2-5 min staleTime
+  - User profile: 10 min staleTime
+- **Error Handling**: Queries return `{ data, isLoading, error, isError }` — check error state in components
+- **Refetching**: Automatic on window focus (default). Disable with `refetchOnWindowFocus: false` if needed
 
-The API contracts are documented under `docs/api/`.
+### Custom Query Hooks
+Each API resource should have a custom hook in `src/api/hooks/`:
+```typescript
+// Example: useProducts.ts
+import { useQuery } from '@tanstack/react-query';
+import { getProducts } from '../services/products.ts';
 
-- `docs/api/auth.json`
-  - Includes auth endpoints like signup, login, logout.
-  - Login examples include bearer token payload (`accessToken`, `refreshToken`).
-- `docs/api/products.json`
-  - Includes product category endpoints (add/update and auth requirements).
-- `docs/api/order.json`
-  - Includes cart/order-related endpoints and response shapes.
-- `docs/api/payment.json`
-  - Includes payment initialization and payment webhook endpoints.
-- `docs/api/user.json`
-  - Includes user profile get/update endpoints.
+export function useProducts() {
+  return useQuery({
+    queryKey: ['products'],
+    queryFn: () => getProducts(),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    retry: 1
+  });
+}
+```
 
-Until API integration is explicitly requested:
+**Usage in components:**
+```jsx
+function ProductsPage() {
+  const { data, isLoading, error } = useProducts();
+  
+  if (isLoading) return <Loading />;
+  if (error) return <Error />;
+  
+  return <ProductsList products={data} />;
+}
+```
 
-- Keep all pages wired to local mock data.
-- Reflect API field names in new type definitions where practical.
-- Avoid adding fetch clients, interceptors, or token persistence logic.
+## API Integration
+
+### Active Integrations
+- **Auth**: Login (email/password) → stores accessToken/refreshToken
+- **Products**: GET /api/v1/products + GET /api/v1/product/categories
+
+### API Architecture
+- **Client**: `src/api/client.ts` — 5 axios clients (auth, product, order, payment, user) with interceptors
+- **Interceptors**: 
+  - Request: Attach `Authorization: Bearer <accessToken>` header
+  - Response: Auto-refresh token on 401, retry original request, sign out if refresh fails
+- **Services**: `src/api/services/` — Functions that call API endpoints (e.g., `loginUser()`, `getProducts()`)
+- **Hooks**: `src/api/hooks/` — TanStack Query hooks wrapping services (e.g., `useProducts()`, `useCategories()`)
+- **Token Store**: `src/api/tokenStore.js` — Module-level store backed by localStorage (survives page refresh)
+
+### Base URLs (from src/api/client.ts)
+- Auth: `https://auth-staging.pickybasket.com/`
+- Products: `https://product-staging.pickybasket.com/`
+- Orders: `https://order-staging.pickybasket.com/`
+- Payments: `https://payment-staging.pickybasket.com/`
+- Users: `https://user-staging.pickybasket.com/`
+
+### API Documentation
+Full API contracts are documented in `docs/api/` (OpenAPI/JSON schemas):
+- `docs/api/auth.json` — Login, signup, token refresh
+- `docs/api/products.json` — Products, categories (CRUD)
+- `docs/api/order.json` — Orders, cart
+- `docs/api/payment.json` — Payment initialization, webhooks
+- `docs/api/user.json` — User profile get/update
 
 ### Code Standards
 
@@ -147,6 +198,50 @@ Until API integration is explicitly requested:
    - Use proper interfaces/types
    - Export types from files
    - Use generic types appropriately
+
+### Adding New API Integrations
+
+To integrate a new API resource (e.g., customers, orders):
+
+1. **Create service file** (`src/api/services/{resource}.ts`):
+   - Define request/response types
+   - Export async functions that call the appropriate API client
+   - Example: `getOrders()`, `createOrder(data)`
+
+2. **Create hook file** (`src/api/hooks/use{Resource}.ts`):
+   - Use `useQuery()` for GET requests
+   - Use `useMutation()` for POST/PATCH/DELETE
+   - Set appropriate `staleTime` and `retry` options
+   - Define query keys
+
+3. **Update component** (page or component file):
+   - Import the hook
+   - Call the hook to get `{ data, isLoading, error }`
+   - Handle loading/error states
+   - Sync data to `useAppStore()` if needed for cross-page access
+
+Example:
+```typescript
+// src/api/services/orders.ts
+export async function getOrders(): Promise<Order[]> {
+  const { data } = await orderApiClient.get('/api/v1/orders');
+  return data.data;
+}
+
+// src/api/hooks/useOrders.ts
+export function useOrders() {
+  return useQuery({
+    queryKey: ['orders'],
+    queryFn: () => getOrders(),
+    staleTime: 5 * 60 * 1000
+  });
+}
+
+// src/pages/OrdersPage.jsx
+const { data: orders, isLoading, error } = useOrders();
+if (isLoading) return <Loading />;
+if (error) return <Error />;
+```
 
 
 ### Testing

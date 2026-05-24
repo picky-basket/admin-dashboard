@@ -1241,6 +1241,8 @@
                           {
                             "orderId": "z7NutWMFueztsJcdHxpe",
                             "orderNumber": "PB-CEA2204F",
+                            "customerName": "John Doe",
+                            "customerPhone": "+233200585542",
                             "status": "pending",
                             "paymentStatus": "pending",
                             "paymentMethod": "mobilemoney",
@@ -1553,6 +1555,8 @@
                       "data": {
                         "orderId": "XkR9zyicTH3ABbnhFMB9",
                         "orderNumber": "PB-F5012512",
+                        "customerName": "John Doe",
+                        "customerPhone": "+233200585542",
                         "status": "pending",
                         "paymentStatus": "pending",
                         "paymentMethod": "mobilemoney",

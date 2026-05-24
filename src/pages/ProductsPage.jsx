@@ -1,8 +1,9 @@
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useBreakpoint } from '../hooks/useBreakpoint.js';
 import { useAppStore } from '../store/appStore.jsx';
 import { useExtractedTheme } from '../components/extracted/theme.js';
 import { UNITS } from '../components/extracted/constants.js';
+import { useProducts, useCategories } from '../api/hooks/useProducts.ts';
 import Button from '../components/extracted/ui/Button.jsx';
 import Card from '../components/extracted/ui/Card.jsx';
 import EmptyState from '../components/extracted/ui/EmptyState.jsx';
@@ -213,6 +214,52 @@ function ProductsExtracted({ products, setProducts, categories }) {
 }
 
 export default function ProductsPage() {
-  const { products, setProducts, categories } = useAppStore();
+  const { setProducts, setCategories } = useAppStore();
+  const { data: productsData, isLoading: productsLoading, error: productsError } = useProducts();
+  const { data: categoriesData, isLoading: categoriesLoading, error: categoriesError } = useCategories();
+
+  useEffect(() => {
+    if (productsData) {
+      // Normalize API product structure to match local expectations
+      const normalized = productsData.map((p) => ({
+        ...p,
+        catId: p.categoryId,
+        stock: p.isAvailable ? 10 : 0, // API doesn't have stock, use availability as proxy
+        image: p.imageUrl,
+        id: p.id || p.productId
+      }));
+      setProducts(normalized);
+    }
+  }, [productsData, setProducts]);
+
+  useEffect(() => {
+    if (categoriesData) {
+      // Normalize API category structure
+      const normalized = categoriesData.map((c) => ({
+        ...c,
+        image: c.imageUrl
+      }));
+      setCategories(normalized);
+    }
+  }, [categoriesData, setCategories]);
+
+  const { products, categories } = useAppStore();
+
+  if (productsLoading || categoriesLoading) {
+    return (
+      <div style={{ padding: 20, textAlign: 'center', color: '#999' }}>
+        Loading products...
+      </div>
+    );
+  }
+
+  if (productsError || categoriesError) {
+    return (
+      <div style={{ padding: 20, textAlign: 'center', color: '#d32f2f' }}>
+        Failed to load products. Using local data.
+      </div>
+    );
+  }
+
   return <ProductsExtracted products={products} setProducts={setProducts} categories={categories} />;
 }
