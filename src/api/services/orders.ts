@@ -69,6 +69,20 @@ export type GetOrdersParams = {
   pageSize?: number;
 };
 
+export type OrderStatus =
+  | 'pending'
+  | 'confirmed'
+  | 'processing'
+  | 'shipped'
+  | 'delivered'
+  | 'cancelled'
+  | 'refunded';
+
+export type UpdateOrderStatusPayload = {
+  status: OrderStatus;
+  cancellationReason: string;
+};
+
 type GetOrdersResponse = {
   status: string;
   data: {
@@ -84,9 +98,26 @@ type GetOrdersResponse = {
   };
 };
 
+type UpdateOrderStatusResponse = {
+  status: string;
+  message: string;
+};
+
 export async function getOrders(params?: GetOrdersParams): Promise<Order[]> {
   const { data } = await orderApiClient.get<GetOrdersResponse>('/api/v1/order/all', {
     params
   });
   return data.data.orders;
+}
+
+export async function updateOrderStatus(
+  orderId: string,
+  payload: UpdateOrderStatusPayload
+): Promise<UpdateOrderStatusResponse> {
+  const { data } = await orderApiClient.patch<UpdateOrderStatusResponse>(
+    `/api/v1/order/${orderId}/status`,
+    payload
+  );
+
+  return data;
 }

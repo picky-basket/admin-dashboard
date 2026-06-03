@@ -40,9 +40,15 @@ const protectedRoute = createRoute({
   component: AppLayout
 });
 
-const dashboardRoute = createRoute({
+const rootRedirectRoute = createRoute({
   getParentRoute: () => protectedRoute,
   path: '/',
+  beforeLoad: () => { throw redirect({ to: ROUTES.DASHBOARD }); }
+});
+
+const dashboardRoute = createRoute({
+  getParentRoute: () => protectedRoute,
+  path: ROUTES.DASHBOARD,
   component: DashboardPage
 });
 
@@ -85,6 +91,7 @@ const settingsRoute = createRoute({
 const routeTree = rootRoute.addChildren([
   loginRoute,
   protectedRoute.addChildren([
+    rootRedirectRoute,
     dashboardRoute,
     ordersRoute,
     productsRoute,

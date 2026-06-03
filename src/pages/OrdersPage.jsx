@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useBreakpoint } from '../hooks/useBreakpoint.js';
 import { useAppStore } from '../store/appStore.jsx';
 import { useExtractedTheme } from '../components/extracted/theme.js';
-import { useOrders } from '../api/hooks/useOrders.ts';
+import { useOrders, useUpdateOrderStatus } from '../api/hooks/useOrders.ts';
 import Button from '../components/extracted/ui/Button.jsx';
 import Card from '../components/extracted/ui/Card.jsx';
 import EmptyState from '../components/extracted/ui/EmptyState.jsx';
@@ -17,15 +17,33 @@ function useT() {
   return useExtractedTheme();
 }
 
+const STATUS_TO_API = {
+  Pending: 'pending',
+  Confirmed: 'confirmed',
+  Processing: 'processing',
+  Shipped: 'shipped',
+  Delivered: 'delivered',
+  Cancelled: 'cancelled',
+  Refunded: 'refunded'
+};
+
+const NEXT_STATUS = {
+  Confirmed: 'Processing',
+  Processing: 'Shipped',
+  Shipped: 'Delivered',
+  Cancelled: 'Refunded'
+};
+
 function OrdersExtracted({ orders, setOrders }) {
   const T = useT();
   const { isMobile } = useBreakpoint();
+  const { mutateAsync: mutateOrderStatus, isPending: isUpdatingStatus } = useUpdateOrderStatus();
   const [tab, setTab] = useState('All');
   const [open, setOpen] = useState(null);
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState('newest');
+  const [updatingOrderId, setUpdatingOrderId] = useState(null);
   const tabs = ['All', 'Pending', 'Confirmed', 'Processing', 'Shipped', 'Delivered', 'Cancelled', 'Refunded'];
-  const next = { Pending: 'Confirmed', Confirmed: 'Processing', Processing: 'Shipped', Shipped: 'Delivered' };
 
   const normalizedOrders = useMemo(
     () =>
@@ -40,21 +58,48 @@ function OrdersExtracted({ orders, setOrders }) {
     let list = tab === 'All' ? normalizedOrders : normalizedOrders.filter((o) => o.status === tab);
     if (search.trim()) {
       const q = search.toLowerCase();
-      list = list.filter((o) => o.id.toLowerCase().includes(q) || o.customer.toLowerCase().includes(q) || o.phone.includes(q));
+      list = list.filter(
+        (o) =>
+          o.id.toLowerCase().includes(q) ||
+          (o.orderNumber || '').toLowerCase().includes(q) ||
+          o.customer.toLowerCase().includes(q) ||
+          o.phone.includes(q)
+      );
     }
     if (sortBy === 'highest') list = [...list].sort((a, b) => (b.subtotal + b.fee) - (a.subtotal + a.fee));
     if (sortBy === 'lowest') list = [...list].sort((a, b) => (a.subtotal + a.fee) - (b.subtotal + b.fee));
     return list;
   }, [normalizedOrders, tab, search, sortBy]);
 
-  const advance = (o) => {
-    setOrders((p) => p.map((x) => (x.id === o.id ? { ...x, status: next[o.status] } : x)));
-    setOpen((prev) => (prev ? { ...prev, status: next[o.status] } : null));
+  const applyStatusLocally = (orderId, status) => {
+    setOrders((p) => p.map((x) => (x.id === orderId ? { ...x, status } : x)));
+    setOpen((prev) => (prev && prev.id === orderId ? { ...prev, status } : prev));
   };
 
-  const cancel = (o) => {
-    setOrders((p) => p.map((x) => (x.id === o.id ? { ...x, status: 'Cancelled' } : x)));
-    setOpen(null);
+  const updateStatus = async (order, nextStatus, cancellationReason = '') => {
+    try {
+      setUpdatingOrderId(order.id);
+      await mutateOrderStatus({
+        orderId: order.id,
+        status: STATUS_TO_API[nextStatus],
+        cancellationReason
+      });
+      applyStatusLocally(order.id, nextStatus);
+    } catch {
+      window.alert('Failed to update order status. Please try again.');
+    } finally {
+      setUpdatingOrderId(null);
+    }
+  };
+
+  const advance = async (order) => {
+    const nextStatus = NEXT_STATUS[order.status];
+    if (!nextStatus) return;
+    await updateStatus(order, nextStatus);
+  };
+
+  const cancel = async (order) => {
+    await updateStatus(order, 'Cancelled', 'Cancelled by admin');
   };
 
   return (
@@ -92,7 +137,7 @@ function OrdersExtracted({ orders, setOrders }) {
             <Card key={o.id} style={{ padding: 14 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
                 <div>
-                  <div style={{ fontWeight: 700, color: T.teal, fontSize: 13 }}>{o.id}</div>
+                  <div style={{ fontWeight: 700, color: T.teal, fontSize: 13 }}>{o.orderNumber || o.id}</div>
                   <div style={{ fontWeight: 600, color: T.text, fontSize: 14 }}>{o.customer}</div>
                   <div style={{ fontSize: 12, color: T.muted }}>{o.phone}</div>
                 </div>
@@ -103,7 +148,11 @@ function OrdersExtracted({ orders, setOrders }) {
               </div>
               <div style={{ display: 'flex', gap: 8, marginTop: 10 }}>
                 <Btn sm onClick={() => setOpen(o)} full>View Details</Btn>
-                {next[o.status] ? <Btn sm v="outline" onClick={() => advance(o)} full>→ {next[o.status]}</Btn> : null}
+                {NEXT_STATUS[o.status] && o.status !== 'Cancelled' ? (
+                  <Btn sm v="outline" onClick={() => advance(o)} full disabled={isUpdatingStatus && updatingOrderId === o.id}>
+                    → {NEXT_STATUS[o.status]}
+                  </Btn>
+                ) : null}
               </div>
             </Card>
           ))}
@@ -122,7 +171,7 @@ function OrdersExtracted({ orders, setOrders }) {
               <tbody>
                 {filtered.map((o, i) => (
                   <tr key={o.id} style={{ borderTop: `1px solid ${T.border}`, background: i % 2 ? T.bgAlt : T.card }}>
-                    <td style={{ padding: '10px 14px', fontWeight: 700, color: T.teal, whiteSpace: 'nowrap' }}>{o.id}</td>
+                    <td style={{ padding: '10px 14px', fontWeight: 700, color: T.teal, whiteSpace: 'nowrap' }}>{o.orderNumber || o.id}</td>
                     <td style={{ padding: '10px 14px' }}>
                       <div style={{ fontWeight: 600, color: T.text }}>{o.customer}</div>
                       <div style={{ fontSize: 11, color: T.muted }}>{o.phone}</div>
@@ -137,7 +186,11 @@ function OrdersExtracted({ orders, setOrders }) {
                     <td style={{ padding: '10px 14px' }}>
                       <div style={{ display: 'flex', gap: 5 }}>
                         <Btn sm onClick={() => setOpen(o)}>View</Btn>
-                        {next[o.status] ? <Btn sm v="outline" onClick={() => advance(o)}>→ {next[o.status]}</Btn> : null}
+                        {NEXT_STATUS[o.status] && o.status !== 'Cancelled' ? (
+                          <Btn sm v="outline" onClick={() => advance(o)} disabled={isUpdatingStatus && updatingOrderId === o.id}>
+                            → {NEXT_STATUS[o.status]}
+                          </Btn>
+                        ) : null}
                       </div>
                     </td>
                   </tr>
@@ -148,7 +201,7 @@ function OrdersExtracted({ orders, setOrders }) {
         </Card>
       )}
       {open ? (
-        <Modal title={`Order ${open.id}`} onClose={() => setOpen(null)} w={520}>
+        <Modal title={`Order ${open.orderNumber || open.id}`} onClose={() => setOpen(null)} w={520}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 14 }}>
             {[['Customer', open.customer], ['Phone', open.phone], ['Address', open.address], ['Placed', open.time], ['Payment', open.method], ['Paid', open.paid ? '✓ Yes' : '✗ No']].map(([l, v]) => (
               <div key={l} style={{ background: T.bgAlt, borderRadius: 9, padding: '9px 12px' }}>
@@ -172,8 +225,21 @@ function OrdersExtracted({ orders, setOrders }) {
             </div>
           </div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-            {next[open.status] ? <Btn onClick={() => advance(open)}>Mark as {next[open.status]} →</Btn> : null}
-            {open.status !== 'Cancelled' && open.status !== 'Delivered' ? <Btn v="danger" onClick={() => cancel(open)}>Cancel Order</Btn> : null}
+            {open.status === 'Confirmed' || open.status === 'Processing' || open.status === 'Shipped' ? (
+              <Btn onClick={() => advance(open)} disabled={isUpdatingStatus && updatingOrderId === open.id}>
+                Mark as {NEXT_STATUS[open.status]} →
+              </Btn>
+            ) : null}
+            {open.status === 'Cancelled' ? (
+              <Btn v="outline" onClick={() => advance(open)} disabled={isUpdatingStatus && updatingOrderId === open.id}>
+                Mark as Refunded →
+              </Btn>
+            ) : null}
+            {open.status !== 'Cancelled' && open.status !== 'Delivered' && open.status !== 'Refunded' ? (
+              <Btn v="danger" onClick={() => cancel(open)} disabled={isUpdatingStatus && updatingOrderId === open.id}>
+                Cancel Order
+              </Btn>
+            ) : null}
             <Btn v="ghost" onClick={() => setOpen(null)}>Close</Btn>
           </div>
         </Modal>
