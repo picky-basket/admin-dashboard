@@ -277,7 +277,12 @@ export default function OrdersPage() {
           method: o.paymentMethod || 'Unknown',
           subtotal: Math.round((o.total || 0) * 0.95), // Estimate subtotal (80% of total for fee calculation)
           fee: Math.round((o.total || 0) * 0.05), // Estimate fee (20% of total)
-          items: o.items || []
+          items: (o.items || []).map((item) => ({
+            ...item,
+            name: item.productName || item.name || 'Item',
+            qty: item.quantity ?? item.qty ?? 0,
+            price: item.unitPrice ?? item.price ?? 0
+          }))
         };
       });
       setOrders(normalized);

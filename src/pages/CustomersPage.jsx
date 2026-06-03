@@ -1,7 +1,8 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useBreakpoint } from '../hooks/useBreakpoint.js';
 import { useAppStore } from '../store/appStore.jsx';
 import { useExtractedTheme } from '../components/extracted/theme.js';
+import { useCustomers } from '../api/hooks/useCustomers.ts';
 import Button from '../components/extracted/ui/Button.jsx';
 import Card from '../components/extracted/ui/Card.jsx';
 import EmptyState from '../components/extracted/ui/EmptyState.jsx';
@@ -202,5 +203,41 @@ function CustomersExtracted({ customers, setCustomers, orders }) {
 
 export default function CustomersPage() {
   const { customers, setCustomers, orders } = useAppStore();
+  const { data: customersData, isLoading, error } = useCustomers();
+
+  useEffect(() => {
+    if (!customersData) return;
+
+    const normalized = customersData.map((c) => ({
+      id: c.id || c.customerId,
+      name: c.name || 'Unknown Customer',
+      email: c.email || '-',
+      phone: c.phoneNumber || '-',
+      orders: Number(c.numberOfOrders || 0),
+      spent: Number(c.totalAmountSpent || 0),
+      joined: c.createdAt || '-',
+      lastSeen: c.lastActive || '-',
+      status: c.isActive ? 'Active' : 'Inactive'
+    }));
+
+    setCustomers(normalized);
+  }, [customersData, setCustomers]);
+
+  if (isLoading) {
+    return (
+      <div style={{ padding: 20, textAlign: 'center', color: '#999' }}>
+        Loading customers...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div style={{ padding: 20, textAlign: 'center', color: '#d32f2f' }}>
+        Failed to load customers. Using local data.
+      </div>
+    );
+  }
+
   return <CustomersExtracted customers={customers} setCustomers={setCustomers} orders={orders} />;
 }
