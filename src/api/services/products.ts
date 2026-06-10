@@ -29,6 +29,25 @@ export type Category = {
   updatedAt?: string;
 };
 
+export type UploadContext = 'product_image' | 'category_image' | 'dish_image';
+export type AllowedImageType = 'image/jpeg' | 'image/png';
+
+export type UploadUrlResult = {
+  signedUrl: string;
+  imagePath: string;
+  expiresIn?: number;
+};
+
+export type AddCategoryPayload = {
+  name: string;
+  imagePath: string;
+};
+
+export type UpdateCategoryPayload = {
+  name?: string;
+  imagePath?: string;
+};
+
 export type GetProductsParams = {
   category?: string;
   min_price?: number;
@@ -72,4 +91,81 @@ export async function getCategories(): Promise<Category[]> {
     '/api/v1/product/categories'
   );
   return data.data;
+}
+
+export async function getUploadUrl(
+  context: UploadContext,
+  contentType: AllowedImageType
+): Promise<UploadUrlResult> {
+  const { data } = await productApiClient.get('/api/v1/upload/url', {
+    params: {
+      context,
+      contentType
+    }
+  });
+
+  const payload = data?.data ?? data;
+  const signedUrl = payload?.signedUrl;
+  const imagePath = payload?.imagePath || payload?.ImagePath;
+
+  if (!signedUrl || !imagePath) {
+    throw new Error('Upload URL response is missing signedUrl or imagePath');
+  }
+
+  return {
+    signedUrl,
+    imagePath,
+    expiresIn: payload?.expiresIn
+  };
+}
+
+export async function uploadFileToSignedUrl(
+  signedUrl: string,
+  file: File,
+  contentType: AllowedImageType
+): Promise<void> {
+  const response = await fetch(signedUrl, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': contentType
+    },
+    body: file
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to upload image file');
+  }
+}
+
+export async function addCategory(payload: AddCategoryPayload) {
+  const body = new URLSearchParams();
+  body.set('name', payload.name);
+  body.set('imagePath', payload.imagePath);
+
+  const { data } = await productApiClient.post('/api/v1/product/category/add', body, {
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }
+  });
+
+  return data;
+}
+
+export async function updateCategory(categoryId: string, payload: UpdateCategoryPayload) {
+  const body = new URLSearchParams();
+
+  if (payload.name) body.set('name', payload.name);
+  if (payload.imagePath) body.set('imagePath', payload.imagePath);
+
+  const { data } = await productApiClient.patch(
+    `/api/v1/product/category/${categoryId}`,
+    body,
+    {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    }
+  );
+
+  return data;
 }

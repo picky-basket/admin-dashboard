@@ -17,13 +17,21 @@ function useT() {
   return useExtractedTheme();
 }
 
-function CustomersExtracted({ customers, setCustomers, orders }) {
+function CustomersExtracted({
+  customers,
+  setCustomers,
+  orders,
+  search,
+  setSearch,
+  statusFlt,
+  setStatus,
+  sortBy,
+  setSortBy,
+  showSkeleton
+}) {
   const T = useT();
   const { isMobile } = useBreakpoint();
   const [open, setOpen] = useState(null);
-  const [search, setSearch] = useState('');
-  const [statusFlt, setStatus] = useState('All');
-  const [sortBy, setSortBy] = useState('spent');
 
   const normalizedCustomers = useMemo(
     () =>
@@ -63,7 +71,9 @@ function CustomersExtracted({ customers, setCustomers, orders }) {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 10 }}>
         <div>
           <h2 style={{ fontSize: 20, fontWeight: 800, color: T.text, margin: 0 }}>Customers</h2>
-          <p style={{ color: T.muted, fontSize: 13, marginTop: 4 }}>{normalizedCustomers.length} registered · {shown.length} shown</p>
+          <p style={{ color: T.muted, fontSize: 13, marginTop: 4 }}>
+            {showSkeleton ? 'Loading customer records...' : `${normalizedCustomers.length} registered · ${shown.length} shown`}
+          </p>
         </div>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', width: isMobile ? '100%' : 'auto' }}>
           <SearchBar value={search} onChange={setSearch} placeholder="Search customers..." />
@@ -86,12 +96,18 @@ function CustomersExtracted({ customers, setCustomers, orders }) {
           { label: 'Inactive', value: normalizedCustomers.filter((c) => c.status === 'Inactive').length, color: T.muted }
         ].map((s) => (
           <Card key={s.label} style={{ textAlign: 'center', padding: '12px 10px' }}>
-            <div style={{ fontSize: 22, fontWeight: 800, color: s.color }}>{s.value}</div>
+            {showSkeleton ? (
+              <div style={{ height: 20, width: 48, borderRadius: 8, background: T.bgAlt, margin: '0 auto' }} />
+            ) : (
+              <div style={{ fontSize: 22, fontWeight: 800, color: s.color }}>{s.value}</div>
+            )}
             <div style={{ fontSize: 11, color: T.muted, marginTop: 2 }}>{s.label}</div>
           </Card>
         ))}
       </div>
-      {shown.length === 0 ? (
+      {showSkeleton ? (
+        <CustomersListSkeleton isMobile={isMobile} T={T} />
+      ) : shown.length === 0 ? (
         <Card><EmptyState icon="👥" msg="No customers match" /></Card>
       ) : isMobile ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -201,9 +217,71 @@ function CustomersExtracted({ customers, setCustomers, orders }) {
   );
 }
 
+function CustomersListSkeleton({ isMobile, T }) {
+  if (isMobile) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {Array.from({ length: 5 }).map((_, i) => (
+          <Card key={`customer-mobile-skeleton-${i}`} style={{ padding: 14 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+              <div style={{ width: 40, height: 40, borderRadius: 12, background: T.bgAlt }} />
+              <div style={{ flex: 1 }}>
+                <div style={{ height: 11, width: '42%', borderRadius: 8, background: T.bgAlt, marginBottom: 6 }} />
+                <div style={{ height: 9, width: '58%', borderRadius: 8, background: T.bgAlt }} />
+              </div>
+            </div>
+            <div style={{ height: 28, width: '100%', borderRadius: 8, background: T.bgAlt }} />
+          </Card>
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <Card style={{ padding: 0, overflow: 'hidden' }}>
+      <div style={{ overflowX: 'auto' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, minWidth: 500 }}>
+          <thead>
+            <tr style={{ background: T.bgAlt }}>
+              {['Customer', 'Phone', 'Orders', 'Spent', 'Last Seen', 'Status', ''].map((h) => (
+                <th key={h} style={{ padding: '10px 14px', textAlign: 'left', fontSize: 11, fontWeight: 700, color: T.muted, textTransform: 'uppercase', letterSpacing: 0.5, whiteSpace: 'nowrap' }}>{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {Array.from({ length: 6 }).map((_, i) => (
+              <tr key={`customer-table-skeleton-${i}`} style={{ borderTop: `1px solid ${T.border}`, background: i % 2 ? T.bgAlt : T.card }}>
+                {Array.from({ length: 7 }).map((__, j) => (
+                  <td key={`customer-cell-skeleton-${i}-${j}`} style={{ padding: '10px 14px' }}>
+                    <div style={{ height: 10, width: `${j === 0 ? 80 : j === 3 ? 52 : 68}%`, borderRadius: 8, background: T.bgAlt }} />
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </Card>
+  );
+}
+
 export default function CustomersPage() {
-  const { customers, setCustomers, orders } = useAppStore();
-  const { data: customersData, isLoading, error } = useCustomers();
+  const { customers, setCustomers, orders, customersView, setCustomersView } = useAppStore();
+  const {
+    data: customersData,
+    isLoading,
+    isFetching,
+    error
+  } = useCustomers();
+  const T = useT();
+
+  const search = customersView?.search ?? '';
+  const statusFlt = customersView?.statusFilter ?? 'All';
+  const sortBy = customersView?.sortBy ?? 'spent';
+
+  const setSearch = (value) => setCustomersView((prev) => ({ ...prev, search: value }));
+  const setStatus = (value) => setCustomersView((prev) => ({ ...prev, statusFilter: value }));
+  const setSortBy = (value) => setCustomersView((prev) => ({ ...prev, sortBy: value }));
 
   useEffect(() => {
     if (!customersData) return;
@@ -223,21 +301,30 @@ export default function CustomersPage() {
     setCustomers(normalized);
   }, [customersData, setCustomers]);
 
-  if (isLoading) {
-    return (
-      <div style={{ padding: 20, textAlign: 'center', color: '#999' }}>
-        Loading customers...
-      </div>
-    );
-  }
+  const isInitialLoad = isLoading && !customersData;
 
-  if (error) {
-    return (
-      <div style={{ padding: 20, textAlign: 'center', color: '#d32f2f' }}>
-        Failed to load customers. Using local data.
-      </div>
-    );
-  }
-
-  return <CustomersExtracted customers={customers} setCustomers={setCustomers} orders={orders} />;
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+      {error ? (
+        <Card style={{ padding: 12, border: `1px solid ${T.red}44`, background: T.redL }}>
+          <div style={{ color: T.red, fontSize: 12, fontWeight: 600 }}>Failed to refresh customers. Showing latest available results.</div>
+        </Card>
+      ) : null}
+      {isFetching && !isInitialLoad ? (
+        <div style={{ color: T.muted, fontSize: 12, fontWeight: 600, padding: '0 2px' }}>Updating customers...</div>
+      ) : null}
+      <CustomersExtracted
+        customers={customers}
+        setCustomers={setCustomers}
+        orders={orders}
+        search={search}
+        setSearch={setSearch}
+        statusFlt={statusFlt}
+        setStatus={setStatus}
+        sortBy={sortBy}
+        setSortBy={setSortBy}
+        showSkeleton={isInitialLoad}
+      />
+    </div>
+  );
 }

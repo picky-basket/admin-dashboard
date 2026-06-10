@@ -7,6 +7,7 @@ export function useCustomers() {
   return useQuery({
     queryKey: CUSTOMERS_QUERY_KEY,
     queryFn: () => getCustomers(),
+    placeholderData: (previousData) => previousData,
     staleTime: 2 * 60 * 1000,
     retry: 1
   });

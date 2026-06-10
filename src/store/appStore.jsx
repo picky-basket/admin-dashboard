@@ -13,6 +13,29 @@ export function AppStoreProvider({ children }) {
   const [products, setProducts] = useState(mockProducts);
   const [orders, setOrders] = useState(mockOrders);
   const [customers, setCustomers] = useState(mockCustomers);
+  const [ordersView, setOrdersView] = useState({
+    tab: 'All',
+    search: '',
+    sortBy: 'newest'
+  });
+  const [productsView, setProductsView] = useState({
+    catFilter: 'All',
+    search: '',
+    stockFilter: 'All',
+    viewMode: 'grid'
+  });
+  const [customersView, setCustomersView] = useState({
+    search: '',
+    statusFilter: 'All',
+    sortBy: 'spent'
+  });
+  const [categoriesView, setCategoriesView] = useState({
+    search: ''
+  });
+  const [paymentsView, setPaymentsView] = useState({
+    search: '',
+    methodFilter: 'All'
+  });
 
   const pendingOrders = useMemo(
     () => orders.filter((order) => order.status === 'Pending').length,
@@ -47,6 +70,16 @@ export function AppStoreProvider({ children }) {
     setProducts,
     orders,
     setOrders,
+    ordersView,
+    setOrdersView,
+    productsView,
+    setProductsView,
+    customersView,
+    setCustomersView,
+    categoriesView,
+    setCategoriesView,
+    paymentsView,
+    setPaymentsView,
     customers,
     setCustomers,
     pendingOrders,

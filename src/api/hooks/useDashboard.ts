@@ -7,6 +7,7 @@ export function useDashboard() {
   return useQuery({
     queryKey: DASHBOARD_QUERY_KEY,
     queryFn: () => getDashboardAnalytics(),
+    placeholderData: (previousData) => previousData,
     staleTime: 2 * 60 * 1000,
     retry: 1
   });

@@ -23,6 +23,41 @@ function toTitleCase(value = '') {
     .join(' ');
 }
 
+function DashboardSkeleton() {
+  const T = useT();
+  const { isMobile, isTablet } = useBreakpoint();
+  const cols = isMobile ? '1fr 1fr' : isTablet ? '1fr 1fr' : 'repeat(4,1fr)';
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: cols, gap: 12 }}>
+        {Array.from({ length: 4 }).map((_, i) => (
+          <Card key={`card-skeleton-${i}`} style={{ padding: '14px 12px' }}>
+            <div style={{ height: 16, width: '50%', borderRadius: 8, background: T.bgAlt, marginBottom: 10 }} />
+            <div style={{ height: 10, width: '68%', borderRadius: 8, background: T.bgAlt }} />
+          </Card>
+        ))}
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 14 }}>
+        {Array.from({ length: 2 }).map((_, i) => (
+          <Card key={`panel-skeleton-${i}`}>
+            <div style={{ height: 14, width: '42%', borderRadius: 8, background: T.bgAlt, marginBottom: 14 }} />
+            {Array.from({ length: 5 }).map((__, row) => (
+              <div key={`panel-row-${i}-${row}`} style={{ marginBottom: 10 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
+                  <div style={{ height: 10, width: '28%', borderRadius: 8, background: T.bgAlt }} />
+                  <div style={{ height: 10, width: '18%', borderRadius: 8, background: T.bgAlt }} />
+                </div>
+                <div style={{ height: 6, width: '100%', borderRadius: 4, background: T.bgAlt }} />
+              </div>
+            ))}
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function DashboardExtracted({ dashboard, user, go }) {
   const T = useT();
   const { isMobile, isTablet } = useBreakpoint();
@@ -66,21 +101,24 @@ function DashboardExtracted({ dashboard, user, go }) {
       <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 14 }}>
         <Card>
           <div style={{ fontWeight: 700, fontSize: 14, color: T.text, marginBottom: 14 }}>Order Pipeline</div>
-          {orderPipeline.map((pipelineItem) => {
-            const statusLabel = toTitleCase(pipelineItem.status);
-            const { fg } = statusStyle(pipelineItem.status, T);
-            return (
-              <div key={pipelineItem.status} style={{ marginBottom: 10 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 4 }}>
-                  <span style={{ color: fg, fontWeight: 600 }}>{statusLabel}</span>
-                  <span style={{ color: T.muted }}>{pipelineItem.count} · {pipelineItem.percentage}%</span>
+          {/** Use one consistent accent color across the pipeline. */}
+          {(() => {
+            const pipelineColor = statusStyle('shipped', T).fg;
+            return orderPipeline.map((pipelineItem) => {
+              const statusLabel = toTitleCase(pipelineItem.status);
+              return (
+                <div key={pipelineItem.status} style={{ marginBottom: 10 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 4 }}>
+                    <span style={{ color: pipelineColor, fontWeight: 600 }}>{statusLabel}</span>
+                    <span style={{ color: T.muted }}>{pipelineItem.count} · {pipelineItem.percentage}%</span>
+                  </div>
+                  <div style={{ height: 6, borderRadius: 4, background: T.bgAlt, overflow: 'hidden' }}>
+                    <div style={{ height: '100%', width: `${pipelineItem.percentage}%`, background: pipelineColor, borderRadius: 4, transition: 'width .5s ease' }} />
+                  </div>
                 </div>
-                <div style={{ height: 6, borderRadius: 4, background: T.bgAlt, overflow: 'hidden' }}>
-                  <div style={{ height: '100%', width: `${pipelineItem.percentage}%`, background: fg, borderRadius: 4, transition: 'width .5s ease' }} />
-                </div>
-              </div>
-            );
-          })}
+              );
+            });
+          })()}
         </Card>
         <Card>
           <div style={{ fontWeight: 700, fontSize: 14, color: T.text, marginBottom: 14 }}>Recent Orders</div>
@@ -97,7 +135,7 @@ function DashboardExtracted({ dashboard, user, go }) {
         </Card>
       </div>
       {stockAlerts.count > 0 ? (
-        <div style={{ background: T.redL, border: `1px solid ${T.red}44`, borderLeft: `4px solid ${T.red}`, borderRadius: 14, padding: 16 }}>
+        <div style={{ background: T.redL, borderRadius: 14, padding: 16 }}>
           <div style={{ fontWeight: 700, fontSize: 13, color: T.red, marginBottom: 10 }}>⚠️ Stock Alerts - {stockAlerts.count} item{stockAlerts.count > 1 ? 's' : ''} need attention</div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(150px,1fr))', gap: 8 }}>
             {stockAlerts.items.map((item) => (
@@ -115,8 +153,19 @@ function DashboardExtracted({ dashboard, user, go }) {
 
 export default function DashboardPage() {
   const navigate = useNavigate();
-  const { data: user } = useUser();
-  const { data: dashboard } = useDashboard();
+  const {
+    data: user,
+    isLoading: userLoading,
+    isFetching: userFetching,
+    error: userError
+  } = useUser();
+  const {
+    data: dashboard,
+    isLoading: dashboardLoading,
+    isFetching: dashboardFetching,
+    error: dashboardError
+  } = useDashboard();
+  const T = useT();
 
   const go = (page) => {
     const pathMap = {
@@ -132,5 +181,21 @@ export default function DashboardPage() {
     navigate({ to: pathMap[page] ?? ROUTES.DASHBOARD });
   };
 
-  return <DashboardExtracted dashboard={dashboard} user={user} go={go} />;
+  const isInitialLoad = (dashboardLoading && !dashboard) || (userLoading && !user);
+  const isRefreshing = (dashboardFetching || userFetching) && !isInitialLoad;
+  const hasError = !!dashboardError || !!userError;
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+      {hasError ? (
+        <Card style={{ padding: 12, border: `1px solid ${T.red}44`, background: T.redL }}>
+          <div style={{ color: T.red, fontSize: 12, fontWeight: 600 }}>Failed to refresh dashboard. Showing latest available results.</div>
+        </Card>
+      ) : null}
+      {isRefreshing ? (
+        <div style={{ color: T.muted, fontSize: 12, fontWeight: 600, padding: '0 2px' }}>Updating dashboard...</div>
+      ) : null}
+      {isInitialLoad ? <DashboardSkeleton /> : <DashboardExtracted dashboard={dashboard} user={user} go={go} />}
+    </div>
+  );
 }

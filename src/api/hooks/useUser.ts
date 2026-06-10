@@ -9,6 +9,7 @@ export function useUser() {
     queryKey: ['user', userId],
     queryFn: () => getUserProfile(userId!),
     enabled: !!userId,
+    placeholderData: (previousData) => previousData,
     staleTime: 10 * 60 * 1000,
     retry: 1
   });

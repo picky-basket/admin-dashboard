@@ -26,15 +26,24 @@ const readFile = (file) =>
     reader.readAsDataURL(file);
   });
 
-function ProductsExtracted({ products, setProducts, categories }) {
+function ProductsExtracted({
+  products,
+  setProducts,
+  categories,
+  catFilter,
+  setCat,
+  search,
+  setSearch,
+  stockFilter,
+  setStock,
+  viewMode,
+  setView,
+  showSkeleton
+}) {
   const T = useT();
   const { isMobile } = useBreakpoint();
   const [open, setOpen] = useState(false);
   const [editing, setEdit] = useState(null);
-  const [catFilter, setCat] = useState('All');
-  const [search, setSearch] = useState('');
-  const [stockFilter, setStock] = useState('All');
-  const [viewMode, setView] = useState('grid');
   const [preview, setPreview] = useState(null);
   const fileRef = useRef();
   const blank = { name: '', catId: '', price: '', unit: 'kg', stock: '', description: '', image: null };
@@ -86,7 +95,9 @@ function ProductsExtracted({ products, setProducts, categories }) {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 10 }}>
         <div>
           <h2 style={{ fontSize: 20, fontWeight: 800, color: T.text, margin: 0 }}>Products</h2>
-          <p style={{ color: T.muted, fontSize: 13, marginTop: 4 }}>{products.length} items · {shown.length} shown</p>
+          <p style={{ color: T.muted, fontSize: 13, marginTop: 4 }}>
+            {showSkeleton ? 'Loading product catalog...' : `${products.length} items · ${shown.length} shown`}
+          </p>
         </div>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', width: isMobile ? '100%' : 'auto' }}>
           <SearchBar value={search} onChange={setSearch} placeholder="Search products..." />
@@ -121,7 +132,9 @@ function ProductsExtracted({ products, setProducts, categories }) {
           );
         })}
       </div>
-      {shown.length === 0 ? (
+      {showSkeleton ? (
+        <ProductsListSkeleton isMobile={isMobile} viewMode={viewMode} T={T} />
+      ) : shown.length === 0 ? (
         <Card><EmptyState icon="🔍" msg="No products match your filters" /></Card>
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : viewMode === 'list' ? '1fr' : 'repeat(auto-fill,minmax(180px,1fr))', gap: 12 }}>
@@ -213,10 +226,68 @@ function ProductsExtracted({ products, setProducts, categories }) {
   );
 }
 
+function ProductsListSkeleton({ isMobile, viewMode, T }) {
+  if (!isMobile && viewMode === 'list') {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {Array.from({ length: 6 }).map((_, i) => (
+          <Card key={`product-list-skeleton-${i}`} style={{ padding: '12px 14px', display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ width: 40, height: 40, borderRadius: 10, background: T.bgAlt, flexShrink: 0 }} />
+            <div style={{ flex: 1 }}>
+              <div style={{ height: 11, width: '35%', borderRadius: 8, background: T.bgAlt, marginBottom: 7 }} />
+              <div style={{ height: 9, width: '24%', borderRadius: 8, background: T.bgAlt }} />
+            </div>
+            <div style={{ height: 24, width: 80, borderRadius: 999, background: T.bgAlt }} />
+            <div style={{ height: 12, width: 62, borderRadius: 8, background: T.bgAlt }} />
+            <div style={{ height: 28, width: 96, borderRadius: 8, background: T.bgAlt }} />
+          </Card>
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(auto-fill,minmax(180px,1fr))', gap: 12 }}>
+      {Array.from({ length: isMobile ? 6 : 8 }).map((_, i) => (
+        <Card key={`product-grid-skeleton-${i}`} style={{ padding: 0, overflow: 'hidden' }}>
+          <div style={{ height: isMobile ? 90 : 110, background: T.bgAlt }} />
+          <div style={{ padding: '10px 12px' }}>
+            <div style={{ height: 11, width: '62%', borderRadius: 8, background: T.bgAlt, marginBottom: 7 }} />
+            <div style={{ height: 9, width: '50%', borderRadius: 8, background: T.bgAlt, marginBottom: 10 }} />
+            <div style={{ height: 13, width: '46%', borderRadius: 8, background: T.bgAlt, marginBottom: 9 }} />
+            <div style={{ height: 28, width: '100%', borderRadius: 8, background: T.bgAlt }} />
+          </div>
+        </Card>
+      ))}
+    </div>
+  );
+}
+
 export default function ProductsPage() {
-  const { setProducts, setCategories } = useAppStore();
-  const { data: productsData, isLoading: productsLoading, error: productsError } = useProducts();
-  const { data: categoriesData, isLoading: categoriesLoading, error: categoriesError } = useCategories();
+  const { setProducts, setCategories, products, categories, productsView, setProductsView } = useAppStore();
+  const {
+    data: productsData,
+    isLoading: productsLoading,
+    isFetching: productsFetching,
+    error: productsError
+  } = useProducts();
+  const {
+    data: categoriesData,
+    isLoading: categoriesLoading,
+    isFetching: categoriesFetching,
+    error: categoriesError
+  } = useCategories();
+  const T = useT();
+
+  const catFilter = productsView?.catFilter ?? 'All';
+  const search = productsView?.search ?? '';
+  const stockFilter = productsView?.stockFilter ?? 'All';
+  const viewMode = productsView?.viewMode ?? 'grid';
+
+  const setCat = (value) => setProductsView((prev) => ({ ...prev, catFilter: value }));
+  const setSearch = (value) => setProductsView((prev) => ({ ...prev, search: value }));
+  const setStock = (value) => setProductsView((prev) => ({ ...prev, stockFilter: value }));
+  const setView = (value) => setProductsView((prev) => ({ ...prev, viewMode: value }));
 
   useEffect(() => {
     if (productsData) {
@@ -243,23 +314,33 @@ export default function ProductsPage() {
     }
   }, [categoriesData, setCategories]);
 
-  const { products, categories } = useAppStore();
+  const isInitialLoad = (productsLoading && !productsData) || (categoriesLoading && !categoriesData);
+  const isRefreshing = (productsFetching || categoriesFetching) && !isInitialLoad;
 
-  if (productsLoading || categoriesLoading) {
-    return (
-      <div style={{ padding: 20, textAlign: 'center', color: '#999' }}>
-        Loading products...
-      </div>
-    );
-  }
-
-  if (productsError || categoriesError) {
-    return (
-      <div style={{ padding: 20, textAlign: 'center', color: '#d32f2f' }}>
-        Failed to load products. Using local data.
-      </div>
-    );
-  }
-
-  return <ProductsExtracted products={products} setProducts={setProducts} categories={categories} />;
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+      {productsError || categoriesError ? (
+        <Card style={{ padding: 12, border: `1px solid ${T.red}44`, background: T.redL }}>
+          <div style={{ color: T.red, fontSize: 12, fontWeight: 600 }}>Failed to refresh products. Showing latest available results.</div>
+        </Card>
+      ) : null}
+      {isRefreshing ? (
+        <div style={{ color: T.muted, fontSize: 12, fontWeight: 600, padding: '0 2px' }}>Updating products...</div>
+      ) : null}
+      <ProductsExtracted
+        products={products}
+        setProducts={setProducts}
+        categories={categories}
+        catFilter={catFilter}
+        setCat={setCat}
+        search={search}
+        setSearch={setSearch}
+        stockFilter={stockFilter}
+        setStock={setStock}
+        viewMode={viewMode}
+        setView={setView}
+        showSkeleton={isInitialLoad}
+      />
+    </div>
+  );
 }

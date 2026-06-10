@@ -12,11 +12,9 @@ function useT() {
   return useExtractedTheme();
 }
 
-function PaymentsExtracted({ orders }) {
+function PaymentsExtracted({ orders, search, setSearch, methodFlt, setMethod }) {
   const T = useT();
   const { isMobile } = useBreakpoint();
-  const [search, setSearch] = useState('');
-  const [methodFlt, setMethod] = useState('All');
   const paid = orders.filter((o) => o.paid && o.status !== 'Cancelled');
   const revenue = paid.reduce((s, o) => s + o.subtotal + o.fee, 0);
 
@@ -138,6 +136,19 @@ function PaymentsExtracted({ orders }) {
 }
 
 export default function PaymentsPage() {
-  const { orders } = useAppStore();
-  return <PaymentsExtracted orders={orders} />;
+  const { orders, paymentsView, setPaymentsView } = useAppStore();
+  const search = paymentsView?.search ?? '';
+  const methodFlt = paymentsView?.methodFilter ?? 'All';
+  const setSearch = (value) => setPaymentsView((prev) => ({ ...prev, search: value }));
+  const setMethod = (value) => setPaymentsView((prev) => ({ ...prev, methodFilter: value }));
+
+  return (
+    <PaymentsExtracted
+      orders={orders}
+      search={search}
+      setSearch={setSearch}
+      methodFlt={methodFlt}
+      setMethod={setMethod}
+    />
+  );
 }

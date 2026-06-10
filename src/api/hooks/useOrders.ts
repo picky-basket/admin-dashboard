@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getOrders, updateOrderStatus } from '../services/orders.ts';
+import type { GetOrdersParams } from '../services/orders.ts';
 
 type UpdateOrderStatusVariables = {
   orderId: string;
@@ -9,10 +10,11 @@ type UpdateOrderStatusVariables = {
 
 export const ORDERS_QUERY_KEY = ['orders'];
 
-export function useOrders() {
+export function useOrders(params?: GetOrdersParams) {
   return useQuery({
-    queryKey: ORDERS_QUERY_KEY,
-    queryFn: () => getOrders(),
+    queryKey: [...ORDERS_QUERY_KEY, params ?? {}],
+    queryFn: () => getOrders(params),
+    placeholderData: (previousData) => previousData,
     staleTime: 2 * 60 * 1000, // 2 minutes
     retry: 1
   });

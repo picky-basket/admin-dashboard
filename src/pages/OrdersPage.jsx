@@ -34,14 +34,11 @@ const NEXT_STATUS = {
   Cancelled: 'Refunded'
 };
 
-function OrdersExtracted({ orders, setOrders }) {
+function OrdersExtracted({ orders, setOrders, search, setSearch, sortBy, setSortBy, tab, setTab }) {
   const T = useT();
   const { isMobile } = useBreakpoint();
   const { mutateAsync: mutateOrderStatus, isPending: isUpdatingStatus } = useUpdateOrderStatus();
-  const [tab, setTab] = useState('All');
   const [open, setOpen] = useState(null);
-  const [search, setSearch] = useState('');
-  const [sortBy, setSortBy] = useState('newest');
   const [updatingOrderId, setUpdatingOrderId] = useState(null);
   const tabs = ['All', 'Pending', 'Confirmed', 'Processing', 'Shipped', 'Delivered', 'Cancelled', 'Refunded'];
 
@@ -56,20 +53,8 @@ function OrdersExtracted({ orders, setOrders }) {
 
   const filtered = useMemo(() => {
     let list = tab === 'All' ? normalizedOrders : normalizedOrders.filter((o) => o.status === tab);
-    if (search.trim()) {
-      const q = search.toLowerCase();
-      list = list.filter(
-        (o) =>
-          o.id.toLowerCase().includes(q) ||
-          (o.orderNumber || '').toLowerCase().includes(q) ||
-          o.customer.toLowerCase().includes(q) ||
-          o.phone.includes(q)
-      );
-    }
-    if (sortBy === 'highest') list = [...list].sort((a, b) => (b.subtotal + b.fee) - (a.subtotal + a.fee));
-    if (sortBy === 'lowest') list = [...list].sort((a, b) => (a.subtotal + a.fee) - (b.subtotal + b.fee));
     return list;
-  }, [normalizedOrders, tab, search, sortBy]);
+  }, [normalizedOrders, tab]);
 
   const applyStatusLocally = (orderId, status) => {
     setOrders((p) => p.map((x) => (x.id === orderId ? { ...x, status } : x)));
@@ -113,8 +98,9 @@ function OrdersExtracted({ orders, setOrders }) {
           <SearchBar value={search} onChange={setSearch} placeholder="Search orders..." />
           <SelectFilter value={sortBy} onChange={setSortBy}>
             <option value="newest">Newest</option>
-            <option value="highest">Highest</option>
-            <option value="lowest">Lowest</option>
+            <option value="oldest">Oldest</option>
+            <option value="orderNumberAsc">Order # (A-Z)</option>
+            <option value="orderNumberDesc">Order # (Z-A)</option>
           </SelectFilter>
         </div>
       </div>
@@ -248,9 +234,117 @@ function OrdersExtracted({ orders, setOrders }) {
   );
 }
 
+function OrdersListSkeleton({ isMobile, T }) {
+  if (isMobile) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {Array.from({ length: 5 }).map((_, i) => (
+          <Card key={`mobile-skeleton-${i}`} style={{ padding: 14 }}>
+            <div style={{ height: 12, width: '42%', background: T.bgAlt, borderRadius: 8, marginBottom: 10 }} />
+            <div style={{ height: 10, width: '58%', background: T.bgAlt, borderRadius: 8, marginBottom: 8 }} />
+            <div style={{ height: 10, width: '34%', background: T.bgAlt, borderRadius: 8, marginBottom: 12 }} />
+            <div style={{ height: 28, width: '100%', background: T.bgAlt, borderRadius: 10 }} />
+          </Card>
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <Card style={{ padding: 0, overflow: 'hidden' }}>
+      <div style={{ overflowX: 'auto' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, minWidth: 600 }}>
+          <thead>
+            <tr style={{ background: T.bgAlt }}>
+              {['Order', 'Customer', 'Items', 'Total', 'Status', 'Paid', 'Action'].map((h) => (
+                <th key={h} style={{ padding: '10px 14px', textAlign: 'left', fontSize: 11, fontWeight: 700, color: T.muted, textTransform: 'uppercase', letterSpacing: 0.5, whiteSpace: 'nowrap' }}>{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {Array.from({ length: 6 }).map((_, i) => (
+              <tr key={`table-skeleton-${i}`} style={{ borderTop: `1px solid ${T.border}`, background: i % 2 ? T.bgAlt : T.card }}>
+                {Array.from({ length: 7 }).map((__, j) => (
+                  <td key={`cell-skeleton-${i}-${j}`} style={{ padding: '10px 14px' }}>
+                    <div style={{ height: 10, width: `${j === 0 ? 80 : j === 3 ? 56 : 72}%`, background: T.bgAlt, borderRadius: 8 }} />
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </Card>
+  );
+}
+
 export default function OrdersPage() {
-  const { setOrders } = useAppStore();
-  const { data: ordersData, isLoading, error } = useOrders();
+  const { setOrders, orders, ordersView, setOrdersView } = useAppStore();
+  const tab = ordersView?.tab ?? 'All';
+  const search = ordersView?.search ?? '';
+  const sortBy = ordersView?.sortBy ?? 'newest';
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const T = useT();
+  const { isMobile } = useBreakpoint();
+
+  const setSearch = (value) => {
+    setOrdersView((prev) => ({
+      ...prev,
+      search: value
+    }));
+  };
+
+  const setSortBy = (value) => {
+    setOrdersView((prev) => ({
+      ...prev,
+      sortBy: value
+    }));
+  };
+
+  const setTab = (value) => {
+    setOrdersView((prev) => ({
+      ...prev,
+      tab: value
+    }));
+  };
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setDebouncedSearch(search.trim());
+    }, 350);
+
+    return () => clearTimeout(timeoutId);
+  }, [search]);
+
+  const apiSort = useMemo(() => {
+    switch (sortBy) {
+      case 'oldest':
+        return { sort_by: 'createdAt', sort_order: 'asc' };
+      case 'orderNumberAsc':
+        return { sort_by: 'orderNumber', sort_order: 'asc' };
+      case 'orderNumberDesc':
+        return { sort_by: 'orderNumber', sort_order: 'desc' };
+      case 'newest':
+      default:
+        return { sort_by: 'createdAt', sort_order: 'desc' };
+    }
+  }, [sortBy]);
+
+  const orderQueryParams = useMemo(
+    () => ({
+      search: debouncedSearch || undefined,
+      sort_by: apiSort.sort_by,
+      sort_order: apiSort.sort_order
+    }),
+    [debouncedSearch, apiSort]
+  );
+
+  const {
+    data: ordersData,
+    isLoading,
+    isFetching,
+    error
+  } = useOrders(orderQueryParams);
 
   useEffect(() => {
     if (ordersData) {
@@ -289,23 +383,74 @@ export default function OrdersPage() {
     }
   }, [ordersData, setOrders]);
 
-  const { orders } = useAppStore();
+  const isInitialLoad = isLoading && !ordersData;
 
-  if (isLoading) {
-    return (
-      <div style={{ padding: 20, textAlign: 'center', color: '#999' }}>
-        Loading orders...
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div style={{ padding: 20, textAlign: 'center', color: '#d32f2f' }}>
-        Failed to load orders. Using local data.
-      </div>
-    );
-  }
-
-  return <OrdersExtracted orders={orders} setOrders={setOrders} />;
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+      {error ? (
+        <Card style={{ padding: 12, border: `1px solid ${T.red}44`, background: T.redL }}>
+          <div style={{ color: T.red, fontSize: 12, fontWeight: 600 }}>Failed to refresh orders. Showing latest available results.</div>
+        </Card>
+      ) : null}
+      {isFetching && !isInitialLoad ? (
+        <div style={{ color: T.muted, fontSize: 12, fontWeight: 600, padding: '0 2px' }}>Updating orders...</div>
+      ) : null}
+      {isInitialLoad ? (
+        <div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 10, marginBottom: 10 }}>
+            <div>
+              <h2 style={{ fontSize: 20, fontWeight: 800, color: T.text, margin: 0 }}>Orders</h2>
+              <p style={{ color: T.muted, fontSize: 13, marginTop: 4 }}>Loading latest orders...</p>
+            </div>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', width: isMobile ? '100%' : 'auto' }}>
+              <SearchBar value={search} onChange={setSearch} placeholder="Search orders..." />
+              <SelectFilter value={sortBy} onChange={setSortBy}>
+                <option value="newest">Newest</option>
+                <option value="oldest">Oldest</option>
+                <option value="orderNumberAsc">Order # (A-Z)</option>
+                <option value="orderNumberDesc">Order # (Z-A)</option>
+              </SelectFilter>
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 8 }}>
+            {['All', 'Pending', 'Confirmed', 'Processing', 'Shipped', 'Delivered', 'Cancelled', 'Refunded'].map((statusLabel) => {
+              const on = tab === statusLabel;
+              return (
+                <button
+                  key={statusLabel}
+                  onClick={() => setTab(statusLabel)}
+                  style={{
+                    padding: '6px 14px',
+                    borderRadius: 20,
+                    border: `1.5px solid ${on ? T.teal : T.border}`,
+                    background: on ? T.teal : T.card,
+                    color: on ? '#fff' : T.muted,
+                    fontSize: 12,
+                    fontWeight: on ? 700 : 400,
+                    cursor: 'pointer',
+                    whiteSpace: 'nowrap',
+                    flexShrink: 0
+                  }}
+                >
+                  {statusLabel}
+                </button>
+              );
+            })}
+          </div>
+          <OrdersListSkeleton isMobile={isMobile} T={T} />
+        </div>
+      ) : (
+        <OrdersExtracted
+          orders={orders}
+          setOrders={setOrders}
+          search={search}
+          setSearch={setSearch}
+          sortBy={sortBy}
+          setSortBy={setSortBy}
+          tab={tab}
+          setTab={setTab}
+        />
+      )}
+    </div>
+  );
 }
