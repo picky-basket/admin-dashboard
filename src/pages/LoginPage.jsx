@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, useSearch } from '@tanstack/react-router';
-import logoSrc from '../logo.svg';
+import logoSrc from '../app-logo.png';
 import { useAppStore } from '../store/appStore.jsx';
 import { DARK, LIGHT } from '../components/extracted/theme.js';
 import Button from '../components/extracted/ui/Button.jsx';
