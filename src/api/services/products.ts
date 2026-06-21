@@ -169,3 +169,11 @@ export async function updateCategory(categoryId: string, payload: UpdateCategory
 
   return data;
 }
+
+export async function deleteCategory(categoryId: string) {
+  const { data } = await productApiClient.delete(
+    `/api/v1/product/category/${categoryId}`
+  );
+
+  return data;
+}

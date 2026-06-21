@@ -5,6 +5,7 @@ import { useExtractedTheme } from '../components/extracted/theme.js';
 import {
   useAddCategory,
   useCategories,
+  useDeleteCategory,
   useUpdateCategory
 } from '../api/hooks/useProducts.ts';
 import {
@@ -41,6 +42,7 @@ function CategoriesExtracted({ categories, setCategories, products, search, setS
   const { isMobile } = useBreakpoint();
   const [open, setOpen] = useState(false);
   const [editing, setEdit] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
   const blank = { name: '', imageUrl: '' };
   const [f, setF] = useState(blank);
   const [selectedImage, setSelectedImage] = useState(null);
@@ -48,6 +50,7 @@ function CategoriesExtracted({ categories, setCategories, products, search, setS
   const fileRef = useRef(null);
   const { mutateAsync: addCategoryMutation, isPending: isAddingCategory } = useAddCategory();
   const { mutateAsync: updateCategoryMutation, isPending: isUpdatingCategory } = useUpdateCategory();
+  const { mutateAsync: deleteCategoryMutation, isPending: isDeletingCategory } = useDeleteCategory();
   const isSaving = isAddingCategory || isUpdatingCategory;
 
   const shown = useMemo(() => {
@@ -71,7 +74,7 @@ function CategoriesExtracted({ categories, setCategories, products, search, setS
       if (selectedImage) {
         const contentType = toAllowedImageType(selectedImage);
         const uploadMeta = await getUploadUrl('category_image', contentType);
-        await uploadFileToSignedUrl(uploadMeta.signedUrl, selectedImage, contentType);
+        const result = await uploadFileToSignedUrl(uploadMeta.signedUrl, selectedImage, contentType);
         imagePath = uploadMeta.imagePath;
         imageUrl = uploadMeta.signedUrl.split('?')[0] || imageUrl;
       }
@@ -124,9 +127,33 @@ function CategoriesExtracted({ categories, setCategories, products, search, setS
     }
   };
 
-  const remove = (id) => {
-    if (products.find((p) => p.catId === id)) return alert('Remove all products in this category first.');
-    if (window.confirm('Delete?')) setCategories((p) => p.filter((c) => c.id !== id));
+  const requestRemove = (category) => {
+    if (products.find((p) => p.catId === category.id)) {
+      window.alert('Remove all products in this category first.');
+      return;
+    }
+
+    setDeleteTarget(category);
+  };
+
+  const confirmRemove = async () => {
+    if (!deleteTarget?.id) return;
+
+    const id = deleteTarget.id;
+
+    if (id.startsWith('tmp-')) {
+      setCategories((prev) => prev.filter((category) => category.id !== id));
+      setDeleteTarget(null);
+      return;
+    }
+
+    try {
+      await deleteCategoryMutation(id);
+      setCategories((prev) => prev.filter((category) => category.id !== id));
+      setDeleteTarget(null);
+    } catch {
+      window.alert('Failed to delete category. Please try again.');
+    }
   };
 
   return (
@@ -159,7 +186,7 @@ function CategoriesExtracted({ categories, setCategories, products, search, setS
                   </div>
                   <div style={{ display: 'flex', gap: 4 }}>
                     <button onClick={() => { setF({ name: c.name, imageUrl: c.imageUrl || c.image || '' }); setPreview(c.imageUrl || c.image || ''); setSelectedImage(null); setEdit(c); setOpen(true); }} style={{ background: T.bgAlt, border: `1px solid ${T.border}`, borderRadius: 7, padding: '5px 8px', cursor: 'pointer', fontSize: 13 }}>✏️</button>
-                    <button onClick={() => remove(c.id)} style={{ background: T.redL, border: `1px solid ${T.red}44`, borderRadius: 7, padding: '5px 8px', cursor: 'pointer', fontSize: 13 }}>🗑️</button>
+                    <button disabled={isDeletingCategory} onClick={() => requestRemove(c)} style={{ background: T.redL, border: `1px solid ${T.red}44`, borderRadius: 7, padding: '5px 8px', cursor: isDeletingCategory ? 'not-allowed' : 'pointer', fontSize: 13, opacity: isDeletingCategory ? 0.65 : 1 }}>🗑️</button>
                   </div>
                 </div>
                 <div style={{ marginTop: 8, fontWeight: 700, fontSize: 13, color: T.text }}>{c.name}</div>
@@ -206,6 +233,21 @@ function CategoriesExtracted({ categories, setCategories, products, search, setS
           <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
             <Btn v="ghost" onClick={() => { setOpen(false); setEdit(null); setPreview(''); setSelectedImage(null); }}>Cancel</Btn>
             <Btn onClick={save} disabled={!f.name.trim() || isSaving}>{isSaving ? 'Saving...' : editing ? 'Save Changes' : 'Add'}</Btn>
+          </div>
+        </Modal>
+      ) : null}
+      {deleteTarget ? (
+        <Modal title="Delete Category" onClose={() => setDeleteTarget(null)} w={420}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <p style={{ margin: 0, color: T.text, fontSize: 14, lineHeight: 1.45 }}>
+              Are you sure you want to delete <strong>{deleteTarget.name}</strong>? This action cannot be undone.
+            </p>
+            <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
+              <Btn v="ghost" onClick={() => setDeleteTarget(null)} disabled={isDeletingCategory}>Cancel</Btn>
+              <Btn onClick={confirmRemove} disabled={isDeletingCategory}>
+                {isDeletingCategory ? 'Deleting...' : 'Delete'}
+              </Btn>
+            </div>
           </div>
         </Modal>
       ) : null}
