@@ -177,3 +177,59 @@ export async function deleteCategory(categoryId: string) {
 
   return data;
 }
+
+export type AddProductPayload = {
+  name: string;
+  price: number;
+  unit: string;
+  categoryId: string;
+  imagePath: string;
+  description?: string;
+  stockQuantity?: number;
+};
+
+export type UpdateProductPayload = {
+  name?: string;
+  price?: number;
+  unit?: string;
+  categoryId?: string;
+  imagePath?: string;
+  description?: string;
+};
+
+export async function addProduct(payload: AddProductPayload) {
+  const body = new URLSearchParams();
+  body.set('name', payload.name);
+  body.set('price', String(payload.price));
+  body.set('currency', 'GHS');
+  body.set('unit', payload.unit);
+  body.set('categoryId', payload.categoryId);
+  body.set('imagePath', payload.imagePath);
+  if (payload.description) body.set('description', payload.description);
+  if (payload.stockQuantity !== undefined) body.set('stockQuantity', String(payload.stockQuantity));
+
+  const { data } = await productApiClient.post('/api/v1/product/add', body, {
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+  });
+
+  return data;
+}
+
+export async function updateProduct(productId: string, payload: UpdateProductPayload) {
+  const body = new URLSearchParams();
+
+  if (payload.name !== undefined) body.set('name', payload.name);
+  if (payload.price !== undefined) body.set('price', String(payload.price));
+  if (payload.unit !== undefined) body.set('unit', payload.unit);
+  if (payload.categoryId !== undefined) body.set('categoryId', payload.categoryId);
+  if (payload.imagePath !== undefined) body.set('imagePath', payload.imagePath);
+  if (payload.description !== undefined) body.set('description', payload.description);
+
+  const { data } = await productApiClient.patch(
+    `/api/v1/product/${productId}/update`,
+    body,
+    { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
+  );
+
+  return data;
+}

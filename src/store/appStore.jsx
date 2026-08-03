@@ -9,10 +9,10 @@ export function AppStoreProvider({ children }) {
   const [loggedIn, setLoggedIn] = useState(() => hasTokens());
   const [darkMode, setDarkMode] = useState(false);
 
-  const [categories, setCategories] = useState(mockCategories);
-  const [products, setProducts] = useState(mockProducts);
-  const [orders, setOrders] = useState(mockOrders);
-  const [customers, setCustomers] = useState(mockCustomers);
+  const [categories, setCategories] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [orders, setOrders] = useState([]);
+  const [customers, setCustomers] = useState([]);
   const [ordersView, setOrdersView] = useState({
     tab: 'All',
     search: '',

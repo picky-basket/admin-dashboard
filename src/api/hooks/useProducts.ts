@@ -1,12 +1,16 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   addCategory,
+  addProduct,
   deleteCategory,
   getCategories,
   getProducts,
   updateCategory,
+  updateProduct,
   type AddCategoryPayload,
-  type UpdateCategoryPayload
+  type AddProductPayload,
+  type UpdateCategoryPayload,
+  type UpdateProductPayload
 } from '../services/products.ts';
 
 const PRODUCTS_QUERY_KEY = ['products'];
@@ -62,6 +66,29 @@ export function useDeleteCategory() {
     mutationFn: (categoryId: string) => deleteCategory(categoryId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: CATEGORIES_QUERY_KEY });
+    }
+  });
+}
+
+export function useAddProduct() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: AddProductPayload) => addProduct(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: PRODUCTS_QUERY_KEY });
+    }
+  });
+}
+
+export function useUpdateProduct() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ productId, payload }: { productId: string; payload: UpdateProductPayload }) =>
+      updateProduct(productId, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: PRODUCTS_QUERY_KEY });
     }
   });
 }

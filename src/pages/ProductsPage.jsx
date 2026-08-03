@@ -3,7 +3,8 @@ import { useBreakpoint } from '../hooks/useBreakpoint.js';
 import { useAppStore } from '../store/appStore.jsx';
 import { useExtractedTheme } from '../components/extracted/theme.js';
 import { UNITS } from '../components/extracted/constants.js';
-import { useProducts, useCategories } from '../api/hooks/useProducts.ts';
+import { useProducts, useCategories, useAddProduct, useUpdateProduct } from '../api/hooks/useProducts.ts';
+import { getUploadUrl, uploadFileToSignedUrl } from '../api/services/products.ts';
 import Button from '../components/extracted/ui/Button.jsx';
 import Card from '../components/extracted/ui/Card.jsx';
 import EmptyState from '../components/extracted/ui/EmptyState.jsx';
@@ -45,14 +46,18 @@ function ProductsExtracted({
   const [open, setOpen] = useState(false);
   const [editing, setEdit] = useState(null);
   const [preview, setPreview] = useState(null);
+  const [pickedFile, setPickedFile] = useState(null);
   const fileRef = useRef();
-  const blank = { name: '', catId: '', price: '', unit: 'kg', stock: '', description: '', image: null };
+  const blank = { name: '', catId: '', price: '', unit: 'kg', stock: '', description: '' };
   const [f, setF] = useState(blank);
+  const { mutateAsync: addProductMutation, isPending: isAddingProduct } = useAddProduct();
+  const { mutateAsync: updateProductMutation, isPending: isUpdatingProduct } = useUpdateProduct();
+  const isSaving = isAddingProduct || isUpdatingProduct;
   const stockLabel = (s) => (s === 0 ? 'Out of Stock' : s <= 5 ? 'Low Stock' : 'In Stock');
 
   const shown = useMemo(() => {
     let list = products;
-    if (catFilter !== 'All') list = list.filter((p) => p.catId === Number(catFilter));
+    if (catFilter !== 'All') list = list.filter((p) => p.catId === catFilter);
     if (stockFilter !== 'All') list = list.filter((p) => stockLabel(p.stock) === stockFilter);
     if (search.trim()) {
       const q = search.toLowerCase();
@@ -65,18 +70,81 @@ function ProductsExtracted({
     const file = e.target.files[0];
     if (!file) return;
     const data = await readFile(file);
+    setPickedFile(file);
     setPreview(data);
-    setF((x) => ({ ...x, image: data }));
   };
 
-  const save = () => {
+  const save = async () => {
     if (!f.name || !f.catId || !f.price) return;
-    const prod = { ...f, price: parseFloat(f.price), stock: parseInt(f.stock, 10) || 0, id: editing?.id || Date.now() };
-    setProducts((p) => (editing ? p.map((x) => (x.id === editing.id ? prod : x)) : [...p, prod]));
-    setF(blank);
-    setPreview(null);
-    setOpen(false);
-    setEdit(null);
+
+    if (!editing && !pickedFile) {
+      window.alert('Please upload a product photo.');
+      return;
+    }
+
+    try {
+      let imageUrl = editing?.image || editing?.imageUrl || '';
+
+      if (pickedFile) {
+        const contentType = pickedFile.type === 'image/png' ? 'image/png' : 'image/jpeg';
+        const uploadMeta = await getUploadUrl('product_image', contentType);
+        await uploadFileToSignedUrl(uploadMeta.signedUrl, pickedFile, contentType);
+        imageUrl = uploadMeta.signedUrl.split('?')[0];
+
+        if (!editing) {
+          await addProductMutation({
+            name: f.name.trim(),
+            price: parseFloat(f.price),
+            unit: f.unit,
+            categoryId: f.catId,
+            imagePath: uploadMeta.imagePath,
+            description: f.description || undefined,
+            stockQuantity: parseInt(f.stock, 10) || undefined
+          });
+        } else {
+          await updateProductMutation({
+            productId: editing.id,
+            payload: {
+              name: f.name.trim(),
+              price: parseFloat(f.price),
+              unit: f.unit,
+              categoryId: f.catId,
+              imagePath: uploadMeta.imagePath,
+              description: f.description || undefined
+            }
+          });
+        }
+      } else if (editing) {
+        await updateProductMutation({
+          productId: editing.id,
+          payload: {
+            name: f.name.trim(),
+            price: parseFloat(f.price),
+            unit: f.unit,
+            categoryId: f.catId,
+            description: f.description || undefined
+          }
+        });
+      }
+
+      const prod = {
+        ...f,
+        price: parseFloat(f.price),
+        stock: parseInt(f.stock, 10) || 0,
+        image: imageUrl,
+        imageUrl,
+        catId: f.catId,
+        id: editing?.id || `tmp-${Date.now()}`
+      };
+      setProducts((p) => (editing ? p.map((x) => (x.id === editing.id ? prod : x)) : [...p, prod]));
+      setF(blank);
+      setPreview(null);
+      setPickedFile(null);
+      setOpen(false);
+      setEdit(null);
+    } catch {
+      window.alert('Failed to save product. Please try again.');
+    }
   };
 
   const remove = (id) => {
@@ -84,8 +152,9 @@ function ProductsExtracted({
   };
 
   const edit = (p) => {
-    setF({ name: p.name, catId: p.catId, price: p.price, unit: p.unit, stock: p.stock, description: p.description || '', image: p.image || null });
-    setPreview(p.image || null);
+    setF({ name: p.name, catId: p.catId, price: p.price, unit: p.unit, stock: p.stock, description: p.description || '' });
+    setPreview(p.image || p.imageUrl || null);
+    setPickedFile(null);
     setEdit(p);
     setOpen(true);
   };
@@ -117,7 +186,7 @@ function ProductsExtracted({
                 ))}
               </div>
             ) : null}
-            <Btn onClick={() => { setF(blank); setPreview(null); setEdit(null); setOpen(true); }}>+ Add</Btn>
+            <Btn onClick={() => { setF(blank); setPreview(null); setPickedFile(null); setEdit(null); setOpen(true); }}>+ Add</Btn>
           </div>
         </div>
       </div>
@@ -198,13 +267,13 @@ function ProductsExtracted({
               )}
             </div>
             <input ref={fileRef} type="file" accept="image/*" onChange={handleImg} style={{ display: 'none' }} />
-            {preview ? <button onClick={() => { setPreview(null); setF((x) => ({ ...x, image: null })); }} style={{ marginTop: 4, fontSize: 11, color: T.red, background: 'none', border: 'none', cursor: 'pointer' }}>Remove photo</button> : null}
+            {preview ? <button onClick={() => { setPreview(null); setPickedFile(null); }} style={{ marginTop: 4, fontSize: 11, color: T.red, background: 'none', border: 'none', cursor: 'pointer' }}>Remove photo</button> : null}
           </div>
           <Field label="Name" value={f.name} onChange={(v) => setF((x) => ({ ...x, name: v }))} placeholder="e.g. Fresh Tilapia" required />
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
             <div>
               <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.muted, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 5 }}>Category <span style={{ color: T.red }}>*</span></label>
-              <select value={f.catId} onChange={(e) => setF((x) => ({ ...x, catId: Number(e.target.value) }))} style={{ width: '100%', padding: '10px 12px', borderRadius: 9, border: `1.5px solid ${T.border}`, fontSize: 16, fontFamily: 'inherit', background: T.inputBg, color: T.text, outline: 'none' }}>
+              <select value={f.catId} onChange={(e) => setF((x) => ({ ...x, catId: e.target.value }))} style={{ width: '100%', padding: '10px 12px', borderRadius: 9, border: `1.5px solid ${T.border}`, fontSize: 16, fontFamily: 'inherit', background: T.inputBg, color: T.text, outline: 'none' }}>
                 <option value="">- choose -</option>
                 {categories.map((c) => <option key={c.id} value={c.id}>{(c.icon || '🗂️')} {c.name}</option>)}
               </select>
@@ -218,7 +287,7 @@ function ProductsExtracted({
           <Field label="Description" value={f.description} onChange={(v) => setF((x) => ({ ...x, description: v }))} placeholder="Short description" rows={2} />
           <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 6 }}>
             <Btn v="ghost" onClick={() => { setOpen(false); setEdit(null); }}>Cancel</Btn>
-            <Btn onClick={save} disabled={!f.name || !f.catId || !f.price}>{editing ? 'Save Changes' : 'Add Product'}</Btn>
+            <Btn onClick={save} disabled={!f.name || !f.catId || !f.price || isSaving}>{isSaving ? 'Saving...' : editing ? 'Save Changes' : 'Add Product'}</Btn>
           </div>
         </Modal>
       ) : null}
