@@ -88,13 +88,15 @@ function OrdersExtracted({ orders, setOrders, search, setSearch, sortBy, setSort
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 10 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
         <div>
           <h2 style={{ fontSize: 20, fontWeight: 800, color: T.text, margin: 0 }}>Orders</h2>
           <p style={{ color: T.muted, fontSize: 13, marginTop: 4 }}>{normalizedOrders.length} total · {filtered.length} shown</p>
         </div>
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', width: isMobile ? '100%' : 'auto' }}>
+      </div>
+      <Card style={{ padding: '10px 12px' }}>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
           <SearchBar value={search} onChange={setSearch} placeholder="Search orders..." />
           <SelectFilter value={sortBy} onChange={setSortBy}>
             <option value="newest">Newest</option>
@@ -103,7 +105,7 @@ function OrdersExtracted({ orders, setOrders, search, setSearch, sortBy, setSort
             <option value="orderNumberDesc">Order # (Z-A)</option>
           </SelectFilter>
         </div>
-      </div>
+      </Card>
       <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 4 }}>
         {tabs.map((t) => {
           const cnt = t === 'All' ? normalizedOrders.length : normalizedOrders.filter((o) => o.status === t).length;

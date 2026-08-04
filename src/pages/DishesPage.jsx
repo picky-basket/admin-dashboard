@@ -135,6 +135,8 @@ function DishesExtracted({ dishes, setDishes, products, search, setSearch, viewM
             {showSkeleton ? 'Loading dishes...' : `${dishes.length} dishes`}
           </p>
         </div>
+      </div>
+      <Card style={{ padding: '10px 12px' }}>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
           <SearchBar value={search} onChange={setSearch} placeholder="Search dishes..." />
           {!isMobile ? (
@@ -147,7 +149,7 @@ function DishesExtracted({ dishes, setDishes, products, search, setSearch, viewM
             </div>
           ) : null}
         </div>
-      </div>
+      </Card>
 
       {showSkeleton ? (
         <DishesGridSkeleton />

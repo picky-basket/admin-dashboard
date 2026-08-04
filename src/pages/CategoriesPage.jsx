@@ -157,17 +157,19 @@ function CategoriesExtracted({ categories, setCategories, search, setSearch }) {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 10 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
         <div>
           <h2 style={{ fontSize: 20, fontWeight: 800, color: T.text, margin: 0 }}>Categories</h2>
           <p style={{ color: T.muted, fontSize: 13, marginTop: 4 }}>{categories.length} categories</p>
         </div>
-        <div style={{ display: 'flex', gap: 8, width: isMobile ? '100%' : 'auto' }}>
-          <SearchBar value={search} onChange={setSearch} placeholder="Search..." />
-          <Btn onClick={() => { setF(blank); setPreview(''); setSelectedImage(null); setEdit(null); setOpen(true); }}>+ Add</Btn>
-        </div>
+        <Btn onClick={() => { setF(blank); setPreview(''); setSelectedImage(null); setEdit(null); setOpen(true); }}>+ Add Category</Btn>
       </div>
+      <Card style={{ padding: '10px 12px' }}>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+          <SearchBar value={search} onChange={setSearch} placeholder="Search categories..." />
+        </div>
+      </Card>
       {shown.length === 0 ? (
         <Card><EmptyState icon="🗂️" msg="No categories found" /></Card>
       ) : (

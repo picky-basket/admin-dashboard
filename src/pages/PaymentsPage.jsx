@@ -39,7 +39,7 @@ function PaymentsExtracted({ orders, search, setSearch, methodFlt, setMethod }) 
   }, [orders, search, methodFlt]);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
       <div>
         <h2 style={{ fontSize: 20, fontWeight: 800, color: T.text, margin: 0 }}>Payments</h2>
         <p style={{ color: T.muted, fontSize: 13, marginTop: 4 }}>Revenue & transaction history</p>
@@ -78,16 +78,20 @@ function PaymentsExtracted({ orders, search, setSearch, methodFlt, setMethod }) 
           </div>
         ))}
       </Card>
-      <Card style={{ padding: 0, overflow: 'hidden' }}>
-        <div style={{ padding: '12px 16px', borderBottom: `1px solid ${T.border}`, display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
-          <span style={{ fontWeight: 700, fontSize: 13, flex: 1, color: T.text }}>All Transactions</span>
-          <SearchBar value={search} onChange={setSearch} placeholder="Search..." />
+      <Card style={{ padding: '10px 12px' }}>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+          <SearchBar value={search} onChange={setSearch} placeholder="Search transactions..." />
           <SelectFilter value={methodFlt} onChange={setMethod}>
             <option value="All">All Methods</option>
             <option value="MTN MoMo">MTN MoMo</option>
             <option value="Card">Card</option>
             <option value="Vodafone">Vodafone</option>
           </SelectFilter>
+        </div>
+      </Card>
+      <Card style={{ padding: 0, overflow: 'hidden' }}>
+        <div style={{ padding: '12px 16px', borderBottom: `1px solid ${T.border}` }}>
+          <span style={{ fontWeight: 700, fontSize: 13, color: T.text }}>All Transactions</span>
         </div>
         {shown.length === 0 ? (
           <EmptyState icon="💸" msg="No transactions match" />

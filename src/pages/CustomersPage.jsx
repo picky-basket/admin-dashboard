@@ -67,15 +67,17 @@ function CustomersExtracted({
   const getCustOrders = (c) => normalizedOrders.filter((o) => o.customer === c.name);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 10 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
         <div>
           <h2 style={{ fontSize: 20, fontWeight: 800, color: T.text, margin: 0 }}>Customers</h2>
           <p style={{ color: T.muted, fontSize: 13, marginTop: 4 }}>
             {showSkeleton ? 'Loading customer records...' : `${normalizedCustomers.length} registered · ${shown.length} shown`}
           </p>
         </div>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', width: isMobile ? '100%' : 'auto' }}>
+      </div>
+      <Card style={{ padding: '10px 12px' }}>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
           <SearchBar value={search} onChange={setSearch} placeholder="Search customers..." />
           <SelectFilter value={statusFlt} onChange={setStatus}>
             <option value="All">All Status</option>
@@ -88,7 +90,7 @@ function CustomersExtracted({
             <option value="name">Name A-Z</option>
           </SelectFilter>
         </div>
-      </div>
+      </Card>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 10 }}>
         {[
           { label: 'Total', value: normalizedCustomers.length, color: T.teal },
