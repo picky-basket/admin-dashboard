@@ -98,6 +98,11 @@ function OrdersExtracted({ orders, setOrders, search, setSearch, sortBy, setSort
       <Card style={{ padding: '10px 12px' }}>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
           <SearchBar value={search} onChange={setSearch} placeholder="Search orders..." />
+          <SelectFilter value={tab} onChange={setTab}>
+            {tabs.map((t) => (
+              <option key={t} value={t}>{t === 'All' ? 'All Statuses' : t}</option>
+            ))}
+          </SelectFilter>
           <SelectFilter value={sortBy} onChange={setSortBy}>
             <option value="newest">Newest</option>
             <option value="oldest">Oldest</option>
@@ -106,17 +111,6 @@ function OrdersExtracted({ orders, setOrders, search, setSearch, sortBy, setSort
           </SelectFilter>
         </div>
       </Card>
-      <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 4 }}>
-        {tabs.map((t) => {
-          const cnt = t === 'All' ? normalizedOrders.length : normalizedOrders.filter((o) => o.status === t).length;
-          const on = tab === t;
-          return (
-            <button key={t} onClick={() => setTab(t)} style={{ padding: '6px 14px', borderRadius: 20, border: `1.5px solid ${on ? T.teal : T.border}`, background: on ? T.teal : T.card, color: on ? '#fff' : T.muted, fontSize: 12, fontWeight: on ? 700 : 400, cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }}>
-              {t} <span style={{ opacity: 0.7, fontSize: 11 }}>({cnt})</span>
-            </button>
-          );
-        })}
-      </div>
       {filtered.length === 0 ? (
         <Card><EmptyState icon="📭" msg="No orders match" /></Card>
       ) : isMobile ? (

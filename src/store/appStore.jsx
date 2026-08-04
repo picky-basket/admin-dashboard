@@ -34,7 +34,8 @@ export function AppStoreProvider({ children }) {
     sortBy: 'spent'
   });
   const [categoriesView, setCategoriesView] = useState({
-    search: ''
+    search: '',
+    viewMode: 'grid'
   });
   const [dishesView, setDishesView] = useState({
     search: '',

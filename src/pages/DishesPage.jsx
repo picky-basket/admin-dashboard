@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useBreakpoint } from '../hooks/useBreakpoint.js';
 import { useAppStore } from '../store/appStore.jsx';
 import { useExtractedTheme } from '../components/extracted/theme.js';
-import { useDishes, useDeleteDish, useUpdateDish } from '../api/hooks/useDishes.ts';
+import { useDishes, useAddDish, useDeleteDish, useUpdateDish } from '../api/hooks/useDishes.ts';
 import { getUploadUrl, uploadFileToSignedUrl } from '../api/services/products.ts';
 import Button from '../components/extracted/ui/Button.jsx';
 import Card from '../components/extracted/ui/Card.jsx';
@@ -39,6 +39,18 @@ function DishesExtracted({ dishes, setDishes, products, search, setSearch, viewM
 
   const { mutateAsync: updateDishMutation, isPending: isUpdating } = useUpdateDish();
   const { mutateAsync: deleteDishMutation, isPending: isDeleting } = useDeleteDish();
+  const { mutateAsync: addDishMutation, isPending: isAdding } = useAddDish();
+  const isSaving = isUpdating || isAdding;
+
+  const openAdd = () => {
+    setEditing({ id: null, name: '', imageUrl: '', products: [] });
+    setFormName('');
+    setPreview('');
+    setPickedFile(null);
+    setDishProducts([]);
+    setAddProductId('');
+    setAddQty(1);
+  };
 
   const openEdit = (dish) => {
     setEditing(dish);
@@ -81,33 +93,40 @@ function DishesExtracted({ dishes, setDishes, products, search, setSearch, viewM
   const saveEdit = async () => {
     if (!formName.trim() || dishProducts.length === 0) return;
 
+    const isAdd = !editing?.id;
+
+    if (isAdd && !pickedFile) {
+      window.alert('Please upload a dish photo.');
+      return;
+    }
+
     try {
-      const payload = {
-        name: formName.trim(),
-        products: dishProducts.map(({ productId, quantity }) => ({ productId, quantity }))
-      };
+      const products = dishProducts.map(({ productId, quantity }) => ({ productId, quantity }));
 
       if (pickedFile) {
         const contentType = pickedFile.type === 'image/png' ? 'image/png' : 'image/jpeg';
         const uploadMeta = await getUploadUrl('dish_image', contentType);
         await uploadFileToSignedUrl(uploadMeta.signedUrl, pickedFile, contentType);
-        payload.imagePath = uploadMeta.imagePath;
         const updatedImageUrl = uploadMeta.signedUrl.split('?')[0];
 
-        await updateDishMutation({ dishId: editing.id, payload });
-        setDishes((prev) =>
-          prev.map((d) => (d.id === editing.id ? { ...d, name: payload.name, imageUrl: updatedImageUrl, products: dishProducts } : d))
-        );
+        if (isAdd) {
+          await addDishMutation({ name: formName.trim(), imagePath: uploadMeta.imagePath, products });
+        } else {
+          await updateDishMutation({ dishId: editing.id, payload: { name: formName.trim(), imagePath: uploadMeta.imagePath, products } });
+          setDishes((prev) =>
+            prev.map((d) => (d.id === editing.id ? { ...d, name: formName.trim(), imageUrl: updatedImageUrl, products: dishProducts } : d))
+          );
+        }
       } else {
-        await updateDishMutation({ dishId: editing.id, payload });
+        await updateDishMutation({ dishId: editing.id, payload: { name: formName.trim(), products } });
         setDishes((prev) =>
-          prev.map((d) => (d.id === editing.id ? { ...d, name: payload.name, products: dishProducts } : d))
+          prev.map((d) => (d.id === editing.id ? { ...d, name: formName.trim(), products: dishProducts } : d))
         );
       }
 
       closeEdit();
     } catch {
-      window.alert('Failed to update dish. Please try again.');
+      window.alert('Failed to save dish. Please try again.');
     }
   };
 
@@ -135,6 +154,7 @@ function DishesExtracted({ dishes, setDishes, products, search, setSearch, viewM
             {showSkeleton ? 'Loading dishes...' : `${dishes.length} dishes`}
           </p>
         </div>
+        <Btn onClick={openAdd}>+ Add Dish</Btn>
       </div>
       <Card style={{ padding: '10px 12px' }}>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
@@ -228,8 +248,8 @@ function DishesExtracted({ dishes, setDishes, products, search, setSearch, viewM
         </div>
       )}
 
-      {editing ? (
-        <Modal title={`Edit: ${editing.name}`} onClose={closeEdit} w={520}>
+      {editing !== null ? (
+        <Modal title={editing?.id ? `Edit: ${editing.name}` : 'Add Dish'} onClose={closeEdit} w={520}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
             <div>
               <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.muted, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 }}>Photo</label>
@@ -323,9 +343,9 @@ function DishesExtracted({ dishes, setDishes, products, search, setSearch, viewM
             </div>
 
             <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
-              <Btn v="ghost" onClick={closeEdit} disabled={isUpdating}>Cancel</Btn>
-              <Btn onClick={saveEdit} disabled={!formName.trim() || dishProducts.length === 0 || isUpdating}>
-                {isUpdating ? 'Saving...' : 'Save Changes'}
+              <Btn v="ghost" onClick={closeEdit} disabled={isSaving}>Cancel</Btn>
+              <Btn onClick={saveEdit} disabled={!formName.trim() || dishProducts.length === 0 || isSaving}>
+                {isSaving ? 'Saving...' : editing?.id ? 'Save Changes' : 'Add Dish'}
               </Btn>
             </div>
           </div>

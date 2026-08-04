@@ -37,7 +37,7 @@ const readFileAsDataUrl = (file) =>
     reader.readAsDataURL(file);
   });
 
-function CategoriesExtracted({ categories, setCategories, search, setSearch }) {
+function CategoriesExtracted({ categories, setCategories, search, setSearch, viewMode, setViewMode }) {
   const T = useT();
   const { isMobile } = useBreakpoint();
   const [open, setOpen] = useState(false);
@@ -168,10 +168,57 @@ function CategoriesExtracted({ categories, setCategories, search, setSearch }) {
       <Card style={{ padding: '10px 12px' }}>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
           <SearchBar value={search} onChange={setSearch} placeholder="Search categories..." />
+          {!isMobile ? (
+            <div style={{ display: 'flex', gap: 2, background: T.bgAlt, borderRadius: 9, padding: 3, border: `1px solid ${T.border}` }}>
+              {['grid', 'list'].map((v) => (
+                <button key={v} onClick={() => setViewMode(v)} style={{ padding: '5px 9px', borderRadius: 7, border: 'none', background: viewMode === v ? T.card : 'transparent', cursor: 'pointer', fontSize: 13, color: viewMode === v ? T.text : T.muted }}>
+                  {v === 'grid' ? '⊞' : '☰'}
+                </button>
+              ))}
+            </div>
+          ) : null}
         </div>
       </Card>
       {shown.length === 0 ? (
         <Card><EmptyState icon="🗂️" msg="No categories found" /></Card>
+      ) : !isMobile && viewMode === 'list' ? (
+        <Card style={{ padding: 0, overflow: 'hidden' }}>
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, minWidth: 400 }}>
+              <thead>
+                <tr style={{ background: T.bgAlt }}>
+                  {['Category', 'Products', 'Action'].map((h) => (
+                    <th key={h} style={{ padding: '10px 14px', textAlign: 'left', fontSize: 11, fontWeight: 700, color: T.muted, textTransform: 'uppercase', letterSpacing: 0.5, whiteSpace: 'nowrap' }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {shown.map((c, i) => {
+                  const count = c.productCount ?? 0;
+                  return (
+                    <tr key={c.id} style={{ borderTop: `1px solid ${T.border}`, background: i % 2 ? T.bgAlt : T.card }}>
+                      <td style={{ padding: '10px 14px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                          <div style={{ width: 36, height: 36, borderRadius: 8, overflow: 'hidden', flexShrink: 0, background: T.bgAlt, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            {c.imageUrl || c.image ? <img src={c.imageUrl || c.image} alt={c.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <span style={{ fontSize: 18 }}>🗂️</span>}
+                          </div>
+                          <span style={{ fontWeight: 600, color: T.text }}>{c.name}</span>
+                        </div>
+                      </td>
+                      <td style={{ padding: '10px 14px', color: T.muted, fontSize: 12 }}>{count} product{count !== 1 ? 's' : ''}</td>
+                      <td style={{ padding: '10px 14px' }}>
+                        <div style={{ display: 'flex', gap: 5 }}>
+                          <button onClick={() => { setF({ name: c.name, imageUrl: c.imageUrl || c.image || '' }); setPreview(c.imageUrl || c.image || ''); setSelectedImage(null); setEdit(c); setOpen(true); }} style={{ padding: '6px 9px', borderRadius: 8, border: `1px solid ${T.border}`, background: T.bgAlt, cursor: 'pointer', fontSize: 13 }}>✏️</button>
+                          <button disabled={isDeletingCategory} onClick={() => requestRemove(c)} style={{ padding: '6px 9px', borderRadius: 8, border: `1px solid ${T.red}44`, background: T.redL, cursor: isDeletingCategory ? 'not-allowed' : 'pointer', fontSize: 13, opacity: isDeletingCategory ? 0.65 : 1 }}>🗑️</button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </Card>
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(auto-fill,minmax(190px,1fr))', gap: 12 }}>
           {shown.map((c) => {
@@ -294,7 +341,9 @@ export default function CategoriesPage() {
   }, [categoriesData, setCategories]);
 
   const search = categoriesView?.search ?? '';
+  const viewMode = categoriesView?.viewMode ?? 'grid';
   const setSearch = (value) => setCategoriesView((prev) => ({ ...prev, search: value }));
+  const setViewMode = (value) => setCategoriesView((prev) => ({ ...prev, viewMode: value }));
   const T = useT();
   const isInitialLoad = isLoading && !categoriesData;
 
@@ -324,6 +373,8 @@ export default function CategoriesPage() {
           setCategories={setCategories}
           search={search}
           setSearch={setSearch}
+          viewMode={viewMode}
+          setViewMode={setViewMode}
         />
       )}
     </div>

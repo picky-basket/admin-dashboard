@@ -24,6 +24,12 @@ export type UpdateDishPayload = {
   products?: { productId: string; quantity: number }[];
 };
 
+export type AddDishPayload = {
+  name: string;
+  imagePath: string;
+  products: { productId: string; quantity: number }[];
+};
+
 type GetDishesResponse = {
   status: string;
   data: Dish[];
@@ -53,5 +59,10 @@ export async function deleteDish(dishId: string) {
   const { data } = await productApiClient.delete(
     `/api/v1/dish/${dishId}/delete`
   );
+  return data;
+}
+
+export async function addDish(payload: AddDishPayload) {
+  const { data } = await productApiClient.post('/api/v1/dish/add', payload);
   return data;
 }

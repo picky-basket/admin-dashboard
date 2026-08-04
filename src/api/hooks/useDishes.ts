@@ -1,8 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
+  addDish,
   deleteDish,
   getDishes,
   updateDish,
+  type AddDishPayload,
   type UpdateDishPayload
 } from '../services/dishes.ts';
 
@@ -40,6 +42,17 @@ export function useDeleteDish() {
 
   return useMutation({
     mutationFn: (dishId: string) => deleteDish(dishId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: DISHES_QUERY_KEY });
+    }
+  });
+}
+
+export function useAddDish() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: AddDishPayload) => addDish(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: DISHES_QUERY_KEY });
     }
