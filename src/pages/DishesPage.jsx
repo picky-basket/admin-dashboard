@@ -3,6 +3,7 @@ import { useBreakpoint } from '../hooks/useBreakpoint.js';
 import { useAppStore } from '../store/appStore.jsx';
 import { useExtractedTheme } from '../components/extracted/theme.js';
 import { useDishes, useAddDish, useDeleteDish, useUpdateDish } from '../api/hooks/useDishes.ts';
+import { useProducts } from '../api/hooks/useProducts.ts';
 import { getUploadUrl, uploadFileToSignedUrl } from '../api/services/products.ts';
 import Button from '../components/extracted/ui/Button.jsx';
 import Card from '../components/extracted/ui/Card.jsx';
@@ -318,7 +319,9 @@ function DishesExtracted({ dishes, setDishes, products, search, setSearch, viewM
                 </div>
               )}
 
-              {availableToAdd.length > 0 ? (
+              {products.length === 0 ? (
+                <p style={{ fontSize: 12, color: T.muted, margin: 0 }}>Loading available products...</p>
+              ) : availableToAdd.length > 0 ? (
                 <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                   <select
                     value={addProductId}
@@ -392,7 +395,7 @@ function DishesGridSkeleton() {
 }
 
 export default function DishesPage() {
-  const { dishes, setDishes, products, dishesView, setDishesView } = useAppStore();
+  const { dishes, setDishes, dishesView, setDishesView } = useAppStore();
   const T = useT();
 
   const search = dishesView?.search ?? '';
@@ -409,6 +412,9 @@ export default function DishesPage() {
     search: debouncedSearch || undefined,
     pageSize: 100
   });
+
+  const { data: allProductsData } = useProducts({ pageSize: 100 });
+  const allProducts = (allProductsData || []).map((p) => ({ ...p, id: p.id || p.productId }));
 
   useEffect(() => {
     if (!dishesData) return;
@@ -431,7 +437,7 @@ export default function DishesPage() {
       <DishesExtracted
         dishes={dishes}
         setDishes={setDishes}
-        products={products}
+        products={allProducts}
         search={search}
         setSearch={setSearch}
         viewMode={viewMode}
