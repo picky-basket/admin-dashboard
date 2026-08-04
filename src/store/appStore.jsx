@@ -11,6 +11,7 @@ export function AppStoreProvider({ children }) {
 
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
+  const [dishes, setDishes] = useState([]);
   const [orders, setOrders] = useState([]);
   const [customers, setCustomers] = useState([]);
   const [ordersView, setOrdersView] = useState({
@@ -22,6 +23,9 @@ export function AppStoreProvider({ children }) {
     catFilter: 'All',
     search: '',
     stockFilter: 'All',
+    sortBy: 'newest',
+    minPrice: '',
+    maxPrice: '',
     viewMode: 'grid'
   });
   const [customersView, setCustomersView] = useState({
@@ -30,6 +34,9 @@ export function AppStoreProvider({ children }) {
     sortBy: 'spent'
   });
   const [categoriesView, setCategoriesView] = useState({
+    search: ''
+  });
+  const [dishesView, setDishesView] = useState({
     search: ''
   });
   const [paymentsView, setPaymentsView] = useState({
@@ -68,6 +75,8 @@ export function AppStoreProvider({ children }) {
     setCategories,
     products,
     setProducts,
+    dishes,
+    setDishes,
     orders,
     setOrders,
     ordersView,
@@ -78,6 +87,8 @@ export function AppStoreProvider({ children }) {
     setCustomersView,
     categoriesView,
     setCategoriesView,
+    dishesView,
+    setDishesView,
     paymentsView,
     setPaymentsView,
     customers,

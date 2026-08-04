@@ -10,6 +10,7 @@ import LoginPage from '../pages/LoginPage.jsx';
 import DashboardPage from '../pages/DashboardPage.jsx';
 import OrdersPage from '../pages/OrdersPage.jsx';
 import ProductsPage from '../pages/ProductsPage.jsx';
+import DishesPage from '../pages/DishesPage.jsx';
 import CategoriesPage from '../pages/CategoriesPage.jsx';
 import CustomersPage from '../pages/CustomersPage.jsx';
 import PaymentsPage from '../pages/PaymentsPage.jsx';
@@ -64,6 +65,12 @@ const productsRoute = createRoute({
   component: ProductsPage
 });
 
+const dishesRoute = createRoute({
+  getParentRoute: () => protectedRoute,
+  path: ROUTES.DISHES,
+  component: DishesPage
+});
+
 const categoriesRoute = createRoute({
   getParentRoute: () => protectedRoute,
   path: ROUTES.CATEGORIES,
@@ -95,6 +102,7 @@ const routeTree = rootRoute.addChildren([
     dashboardRoute,
     ordersRoute,
     productsRoute,
+    dishesRoute,
     categoriesRoute,
     customersRoute,
     paymentsRoute,

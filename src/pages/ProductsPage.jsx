@@ -37,6 +37,12 @@ function ProductsExtracted({
   setSearch,
   stockFilter,
   setStock,
+  sortBy,
+  setSortBy,
+  minPrice,
+  setMinPrice,
+  maxPrice,
+  setMaxPrice,
   viewMode,
   setView,
   showSkeleton
@@ -53,18 +59,7 @@ function ProductsExtracted({
   const { mutateAsync: addProductMutation, isPending: isAddingProduct } = useAddProduct();
   const { mutateAsync: updateProductMutation, isPending: isUpdatingProduct } = useUpdateProduct();
   const isSaving = isAddingProduct || isUpdatingProduct;
-  const stockLabel = (s) => (s === 0 ? 'Out of Stock' : s <= 5 ? 'Low Stock' : 'In Stock');
-
-  const shown = useMemo(() => {
-    let list = products;
-    if (catFilter !== 'All') list = list.filter((p) => p.catId === catFilter);
-    if (stockFilter !== 'All') list = list.filter((p) => stockLabel(p.stock) === stockFilter);
-    if (search.trim()) {
-      const q = search.toLowerCase();
-      list = list.filter((p) => p.name.toLowerCase().includes(q) || (p.description || '').toLowerCase().includes(q));
-    }
-    return list;
-  }, [products, catFilter, search, stockFilter]);
+  const stockLabel = (s) => (s === 0 ? 'Out of Stock' : 'In Stock');
 
   const handleImg = async (e) => {
     const file = e.target.files[0];
@@ -159,55 +154,98 @@ function ProductsExtracted({
     setOpen(true);
   };
 
+  const hasActiveFilters = catFilter !== 'All' || stockFilter !== 'All' || sortBy !== 'newest' || search !== '' || minPrice !== '' || maxPrice !== '';
+
+  const resetFilters = () => {
+    setCat('All');
+    setStock('All');
+    setSortBy('newest');
+    setSearch('');
+    setMinPrice('');
+    setMaxPrice('');
+  };
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 10 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
         <div>
           <h2 style={{ fontSize: 20, fontWeight: 800, color: T.text, margin: 0 }}>Products</h2>
           <p style={{ color: T.muted, fontSize: 13, marginTop: 4 }}>
-            {showSkeleton ? 'Loading product catalog...' : `${products.length} items · ${shown.length} shown`}
+            {showSkeleton ? 'Loading product catalog...' : `${products.length} items`}
           </p>
         </div>
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', width: isMobile ? '100%' : 'auto' }}>
-          <SearchBar value={search} onChange={setSearch} placeholder="Search products..." />
-          <div style={{ display: 'flex', gap: 6 }}>
-            <SelectFilter value={stockFilter} onChange={setStock}>
-              <option value="All">All Stock</option>
-              <option value="In Stock">In Stock</option>
-              <option value="Low Stock">Low Stock</option>
-              <option value="Out of Stock">Out of Stock</option>
-            </SelectFilter>
-            {!isMobile ? (
-              <div style={{ display: 'flex', gap: 2, background: T.bgAlt, borderRadius: 9, padding: 3, border: `1px solid ${T.border}` }}>
-                {['grid', 'list'].map((v) => (
-                  <button key={v} onClick={() => setView(v)} style={{ padding: '5px 9px', borderRadius: 7, border: 'none', background: viewMode === v ? T.card : 'transparent', cursor: 'pointer', fontSize: 13, color: viewMode === v ? T.text : T.muted }}>
-                    {v === 'grid' ? '⊞' : '☰'}
-                  </button>
-                ))}
-              </div>
-            ) : null}
-            <Btn onClick={() => { setF(blank); setPreview(null); setPickedFile(null); setEdit(null); setOpen(true); }}>+ Add</Btn>
+        <Btn onClick={() => { setF(blank); setPreview(null); setPickedFile(null); setEdit(null); setOpen(true); }}>+ Add Product</Btn>
+      </div>
+
+      <Card style={{ padding: '10px 12px' }}>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+          <div style={{ flex: isMobile ? '1 1 100%' : '1 1 160px', minWidth: 140 }}>
+            <SearchBar value={search} onChange={setSearch} placeholder="Search products..." />
           </div>
-        </div>
-      </div>
-      <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 4 }}>
-        {['All', ...categories.map((c) => String(c.id))].map((id) => {
-          const c = categories.find((x) => String(x.id) === id);
-          const on = catFilter === id;
-          return (
-            <button key={id} onClick={() => setCat(id)} style={{ padding: '6px 12px', borderRadius: 20, border: `1.5px solid ${on ? T.teal : T.border}`, background: on ? T.teal : T.card, color: on ? '#fff' : T.muted, fontSize: 12, fontWeight: on ? 700 : 400, cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }}>
-              {c ? `${c.icon || '🗂️'} ${c.name}` : 'All'}
+          <select
+            value={catFilter}
+            onChange={(e) => setCat(e.target.value)}
+            style={{ padding: '9px 10px', borderRadius: 9, border: `1.5px solid ${T.border}`, fontSize: 14, fontFamily: 'inherit', background: T.inputBg, color: T.text, outline: 'none', cursor: 'pointer', minHeight: 40 }}
+          >
+            <option value="All">All Categories</option>
+            {categories.map((c) => (
+              <option key={c.id} value={c.id}>{c.name}</option>
+            ))}
+          </select>
+          <SelectFilter value={stockFilter} onChange={setStock}>
+            <option value="All">All Stock</option>
+            <option value="In Stock">In Stock</option>
+            <option value="Out of Stock">Out of Stock</option>
+          </SelectFilter>
+          <SelectFilter value={sortBy} onChange={setSortBy}>
+            <option value="newest">Newest</option>
+            <option value="oldest">Oldest</option>
+            <option value="price_asc">Price: Low → High</option>
+            <option value="price_desc">Price: High → Low</option>
+            <option value="name_asc">Name: A–Z</option>
+            <option value="name_desc">Name: Z–A</option>
+          </SelectFilter>
+          <input
+            type="number"
+            min={0}
+            value={minPrice}
+            onChange={(e) => setMinPrice(e.target.value)}
+            placeholder="Min GHS"
+            style={{ width: 82, padding: '9px 10px', borderRadius: 9, border: `1.5px solid ${T.border}`, fontSize: 13, fontFamily: 'inherit', background: T.inputBg, color: T.text, outline: 'none', minHeight: 40, boxSizing: 'border-box' }}
+          />
+          <input
+            type="number"
+            min={0}
+            value={maxPrice}
+            onChange={(e) => setMaxPrice(e.target.value)}
+            placeholder="Max GHS"
+            style={{ width: 82, padding: '9px 10px', borderRadius: 9, border: `1.5px solid ${T.border}`, fontSize: 13, fontFamily: 'inherit', background: T.inputBg, color: T.text, outline: 'none', minHeight: 40, boxSizing: 'border-box' }}
+          />
+          <div style={{ display: 'flex', gap: 2, background: T.bgAlt, borderRadius: 9, padding: 3, border: `1px solid ${T.border}` }}>
+            {['grid', 'list'].map((v) => (
+              <button key={v} onClick={() => setView(v)} style={{ padding: '5px 9px', borderRadius: 7, border: 'none', background: viewMode === v ? T.card : 'transparent', cursor: 'pointer', fontSize: 13, color: viewMode === v ? T.text : T.muted }}>
+                {v === 'grid' ? '⊞' : '☰'}
+              </button>
+            ))}
+          </div>
+          {hasActiveFilters ? (
+            <button
+              onClick={resetFilters}
+              style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '8px 12px', borderRadius: 9, border: `1.5px solid ${T.border}`, background: T.bgAlt, color: T.muted, fontSize: 12, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap', minHeight: 40 }}
+            >
+              ✕ Reset filters
             </button>
-          );
-        })}
-      </div>
+          ) : null}
+        </div>
+      </Card>
+
       {showSkeleton ? (
         <ProductsListSkeleton isMobile={isMobile} viewMode={viewMode} T={T} />
-      ) : shown.length === 0 ? (
+      ) : products.length === 0 ? (
         <Card><EmptyState icon="🔍" msg="No products match your filters" /></Card>
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : viewMode === 'list' ? '1fr' : 'repeat(auto-fill,minmax(180px,1fr))', gap: 12 }}>
-          {shown.map((p) => {
+          {products.map((p) => {
             const c = categories.find((x) => x.id === p.catId);
             const sl = stockLabel(p.stock);
             if (!isMobile && viewMode === 'list') {
@@ -334,12 +372,58 @@ function ProductsListSkeleton({ isMobile, viewMode, T }) {
 
 export default function ProductsPage() {
   const { setProducts, setCategories, products, categories, productsView, setProductsView } = useAppStore();
+
+  const catFilter = productsView?.catFilter ?? 'All';
+  const search = productsView?.search ?? '';
+  const stockFilter = productsView?.stockFilter ?? 'All';
+  const sortBy = productsView?.sortBy ?? 'newest';
+  const minPrice = productsView?.minPrice ?? '';
+  const maxPrice = productsView?.maxPrice ?? '';
+  const viewMode = productsView?.viewMode ?? 'grid';
+
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [debouncedMin, setDebouncedMin] = useState('');
+  const [debouncedMax, setDebouncedMax] = useState('');
+
+  useEffect(() => {
+    const id = setTimeout(() => setDebouncedSearch(search.trim()), 350);
+    return () => clearTimeout(id);
+  }, [search]);
+
+  useEffect(() => {
+    const id = setTimeout(() => { setDebouncedMin(minPrice); setDebouncedMax(maxPrice); }, 500);
+    return () => clearTimeout(id);
+  }, [minPrice, maxPrice]);
+
+  const apiSort = useMemo(() => {
+    switch (sortBy) {
+      case 'oldest':     return { sort_by: 'createdAt', sort_order: 'asc' };
+      case 'price_asc':  return { sort_by: 'price',     sort_order: 'asc' };
+      case 'price_desc': return { sort_by: 'price',     sort_order: 'desc' };
+      case 'name_asc':   return { sort_by: 'name',      sort_order: 'asc' };
+      case 'name_desc':  return { sort_by: 'name',      sort_order: 'desc' };
+      case 'newest':
+      default:           return { sort_by: 'createdAt', sort_order: 'desc' };
+    }
+  }, [sortBy]);
+
+  const productQueryParams = useMemo(() => ({
+    category:     catFilter !== 'All' ? catFilter : undefined,
+    pageSize:     100,
+    search:       debouncedSearch || undefined,
+    is_available: stockFilter === 'In Stock' ? true : stockFilter === 'Out of Stock' ? false : undefined,
+    min_price:    debouncedMin !== '' ? parseFloat(debouncedMin) : undefined,
+    max_price:    debouncedMax !== '' ? parseFloat(debouncedMax) : undefined,
+    sort_by:      apiSort.sort_by,
+    sort_order:   apiSort.sort_order,
+  }), [catFilter, debouncedSearch, stockFilter, debouncedMin, debouncedMax, apiSort]);
+
   const {
     data: productsData,
     isLoading: productsLoading,
     isFetching: productsFetching,
     error: productsError
-  } = useProducts();
+  } = useProducts(productQueryParams);
   const {
     data: categoriesData,
     isLoading: categoriesLoading,
@@ -348,14 +432,12 @@ export default function ProductsPage() {
   } = useCategories();
   const T = useT();
 
-  const catFilter = productsView?.catFilter ?? 'All';
-  const search = productsView?.search ?? '';
-  const stockFilter = productsView?.stockFilter ?? 'All';
-  const viewMode = productsView?.viewMode ?? 'grid';
-
   const setCat = (value) => setProductsView((prev) => ({ ...prev, catFilter: value }));
   const setSearch = (value) => setProductsView((prev) => ({ ...prev, search: value }));
   const setStock = (value) => setProductsView((prev) => ({ ...prev, stockFilter: value }));
+  const setSortBy = (value) => setProductsView((prev) => ({ ...prev, sortBy: value }));
+  const setMinPrice = (value) => setProductsView((prev) => ({ ...prev, minPrice: value }));
+  const setMaxPrice = (value) => setProductsView((prev) => ({ ...prev, maxPrice: value }));
   const setView = (value) => setProductsView((prev) => ({ ...prev, viewMode: value }));
 
   useEffect(() => {
@@ -393,9 +475,6 @@ export default function ProductsPage() {
           <div style={{ color: T.red, fontSize: 12, fontWeight: 600 }}>Failed to refresh products. Showing latest available results.</div>
         </Card>
       ) : null}
-      {isRefreshing ? (
-        <div style={{ color: T.muted, fontSize: 12, fontWeight: 600, padding: '0 2px' }}>Updating products...</div>
-      ) : null}
       <ProductsExtracted
         products={products}
         setProducts={setProducts}
@@ -406,9 +485,15 @@ export default function ProductsPage() {
         setSearch={setSearch}
         stockFilter={stockFilter}
         setStock={setStock}
+        sortBy={sortBy}
+        setSortBy={setSortBy}
+        minPrice={minPrice}
+        setMinPrice={setMinPrice}
+        maxPrice={maxPrice}
+        setMaxPrice={setMaxPrice}
         viewMode={viewMode}
         setView={setView}
-        showSkeleton={isInitialLoad}
+        showSkeleton={isInitialLoad || isRefreshing}
       />
     </div>
   );

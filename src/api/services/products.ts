@@ -53,9 +53,10 @@ export type GetProductsParams = {
   min_price?: number;
   max_price?: number;
   is_available?: boolean;
+  search?: string;
   tags?: string;
-  sort_by?: 'createdAt' | 'price' | 'name';
-  sort_order?: 'asc' | 'desc';
+  sort_by?: string;
+  sort_order?: string;
   pageSize?: number;
 };
 
