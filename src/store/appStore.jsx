@@ -37,7 +37,8 @@ export function AppStoreProvider({ children }) {
     search: ''
   });
   const [dishesView, setDishesView] = useState({
-    search: ''
+    search: '',
+    viewMode: 'grid'
   });
   const [paymentsView, setPaymentsView] = useState({
     search: '',

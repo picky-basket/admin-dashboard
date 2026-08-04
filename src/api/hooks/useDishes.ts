@@ -8,10 +8,15 @@ import {
 
 const DISHES_QUERY_KEY = ['dishes'];
 
-export function useDishes() {
+type DishesQueryParams = {
+  search?: string;
+  pageSize?: number;
+};
+
+export function useDishes(params?: DishesQueryParams) {
   return useQuery({
-    queryKey: DISHES_QUERY_KEY,
-    queryFn: getDishes,
+    queryKey: [...DISHES_QUERY_KEY, params],
+    queryFn: () => getDishes(params),
     placeholderData: (previousData) => previousData,
     staleTime: 5 * 60 * 1000,
     retry: 1

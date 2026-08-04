@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useBreakpoint } from '../hooks/useBreakpoint.js';
 import { useAppStore } from '../store/appStore.jsx';
 import { useExtractedTheme } from '../components/extracted/theme.js';
@@ -24,7 +24,7 @@ const readFileAsDataUrl = (file) =>
     reader.readAsDataURL(file);
   });
 
-function DishesExtracted({ dishes, setDishes, products, search, setSearch }) {
+function DishesExtracted({ dishes, setDishes, products, search, setSearch, viewMode, setViewMode, showSkeleton }) {
   const T = useT();
   const { isMobile } = useBreakpoint();
   const [editing, setEditing] = useState(null);
@@ -39,12 +39,6 @@ function DishesExtracted({ dishes, setDishes, products, search, setSearch }) {
 
   const { mutateAsync: updateDishMutation, isPending: isUpdating } = useUpdateDish();
   const { mutateAsync: deleteDishMutation, isPending: isDeleting } = useDeleteDish();
-
-  const shown = useMemo(() => {
-    if (!search.trim()) return dishes;
-    const q = search.toLowerCase();
-    return dishes.filter((d) => d.name.toLowerCase().includes(q));
-  }, [dishes, search]);
 
   const openEdit = (dish) => {
     setEditing(dish);
@@ -133,20 +127,74 @@ function DishesExtracted({ dishes, setDishes, products, search, setSearch }) {
   );
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 10 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
         <div>
           <h2 style={{ fontSize: 20, fontWeight: 800, color: T.text, margin: 0 }}>Dishes</h2>
-          <p style={{ color: T.muted, fontSize: 13, marginTop: 4 }}>{dishes.length} dishes</p>
+          <p style={{ color: T.muted, fontSize: 13, marginTop: 4 }}>
+            {showSkeleton ? 'Loading dishes...' : `${dishes.length} dishes`}
+          </p>
         </div>
-        <SearchBar value={search} onChange={setSearch} placeholder="Search dishes..." />
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+          <SearchBar value={search} onChange={setSearch} placeholder="Search dishes..." />
+          {!isMobile ? (
+            <div style={{ display: 'flex', gap: 2, background: T.bgAlt, borderRadius: 9, padding: 3, border: `1px solid ${T.border}` }}>
+              {['grid', 'list'].map((v) => (
+                <button key={v} onClick={() => setViewMode(v)} style={{ padding: '5px 9px', borderRadius: 7, border: 'none', background: viewMode === v ? T.card : 'transparent', cursor: 'pointer', fontSize: 13, color: viewMode === v ? T.text : T.muted }}>
+                  {v === 'grid' ? '⊞' : '☰'}
+                </button>
+              ))}
+            </div>
+          ) : null}
+        </div>
       </div>
 
-      {shown.length === 0 ? (
+      {showSkeleton ? (
+        <DishesGridSkeleton />
+      ) : dishes.length === 0 ? (
         <Card><EmptyState icon="🍽️" msg="No dishes found" /></Card>
+      ) : !isMobile && viewMode === 'list' ? (
+        <Card style={{ padding: 0, overflow: 'hidden' }}>
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, minWidth: 500 }}>
+              <thead>
+                <tr style={{ background: T.bgAlt }}>
+                  {['Dish', 'Ingredients', 'Est. Total', 'Action'].map((h) => (
+                    <th key={h} style={{ padding: '10px 14px', textAlign: 'left', fontSize: 11, fontWeight: 700, color: T.muted, textTransform: 'uppercase', letterSpacing: 0.5, whiteSpace: 'nowrap' }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {dishes.map((d, i) => {
+                  const totalPrice = (d.products || []).reduce((sum, p) => sum + (p.price || 0) * (p.quantity || 1), 0);
+                  return (
+                    <tr key={d.id} style={{ borderTop: `1px solid ${T.border}`, background: i % 2 ? T.bgAlt : T.card }}>
+                      <td style={{ padding: '10px 14px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                          <div style={{ width: 36, height: 36, borderRadius: 8, overflow: 'hidden', flexShrink: 0, background: T.bgAlt, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            {d.imageUrl ? <img src={d.imageUrl} alt={d.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <span style={{ fontSize: 18 }}>🍽️</span>}
+                          </div>
+                          <span style={{ fontWeight: 600, color: T.text }}>{d.name}</span>
+                        </div>
+                      </td>
+                      <td style={{ padding: '10px 14px', color: T.muted, fontSize: 12 }}>{(d.products || []).length} ingredient{(d.products || []).length !== 1 ? 's' : ''}</td>
+                      <td style={{ padding: '10px 14px', fontWeight: 700, color: T.teal }}>{totalPrice > 0 ? `GHS ${totalPrice}` : '—'}</td>
+                      <td style={{ padding: '10px 14px' }}>
+                        <div style={{ display: 'flex', gap: 5 }}>
+                          <Btn sm v="outline" onClick={() => openEdit(d)}>Edit</Btn>
+                          <button onClick={() => setDeleteTarget(d)} disabled={isDeleting} style={{ padding: '6px 9px', borderRadius: 8, border: `1px solid ${T.red}44`, background: T.redL, cursor: isDeleting ? 'not-allowed' : 'pointer', fontSize: 13, opacity: isDeleting ? 0.65 : 1 }}>🗑️</button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </Card>
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(auto-fill,minmax(200px,1fr))', gap: 12 }}>
-          {shown.map((d) => {
+          {dishes.map((d) => {
             const totalPrice = (d.products || []).reduce((sum, p) => sum + (p.price || 0) * (p.quantity || 1), 0);
             return (
               <Card key={d.id} style={{ padding: 0, overflow: 'hidden' }}>
@@ -323,18 +371,33 @@ function DishesGridSkeleton() {
 
 export default function DishesPage() {
   const { dishes, setDishes, products, dishesView, setDishesView } = useAppStore();
-  const { data: dishesData, isLoading, isFetching, error } = useDishes();
   const T = useT();
+
+  const search = dishesView?.search ?? '';
+  const viewMode = dishesView?.viewMode ?? 'grid';
+
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+
+  useEffect(() => {
+    const id = setTimeout(() => setDebouncedSearch(search.trim()), 350);
+    return () => clearTimeout(id);
+  }, [search]);
+
+  const { data: dishesData, isLoading, isFetching, error } = useDishes({
+    search: debouncedSearch || undefined,
+    pageSize: 100
+  });
 
   useEffect(() => {
     if (!dishesData) return;
     setDishes(dishesData.map((d) => ({ ...d, id: d.id || d.dishId })));
   }, [dishesData, setDishes]);
 
-  const search = dishesView?.search ?? '';
   const setSearch = (value) => setDishesView((prev) => ({ ...prev, search: value }));
+  const setViewMode = (value) => setDishesView((prev) => ({ ...prev, viewMode: value }));
 
   const isInitialLoad = isLoading && !dishesData;
+  const isRefreshing = isFetching && !isInitialLoad;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -343,28 +406,16 @@ export default function DishesPage() {
           <div style={{ color: T.red, fontSize: 12, fontWeight: 600 }}>Failed to refresh dishes. Showing latest available results.</div>
         </Card>
       ) : null}
-      {isFetching && !isInitialLoad ? (
-        <div style={{ color: T.muted, fontSize: 12, fontWeight: 600, padding: '0 2px' }}>Updating dishes...</div>
-      ) : null}
-      {isInitialLoad ? (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 10 }}>
-            <div>
-              <h2 style={{ fontSize: 20, fontWeight: 800, color: T.text, margin: 0 }}>Dishes</h2>
-              <p style={{ color: T.muted, fontSize: 13, marginTop: 4 }}>Loading dishes...</p>
-            </div>
-          </div>
-          <DishesGridSkeleton />
-        </div>
-      ) : (
-        <DishesExtracted
-          dishes={dishes}
-          setDishes={setDishes}
-          products={products}
-          search={search}
-          setSearch={setSearch}
-        />
-      )}
+      <DishesExtracted
+        dishes={dishes}
+        setDishes={setDishes}
+        products={products}
+        search={search}
+        setSearch={setSearch}
+        viewMode={viewMode}
+        setViewMode={setViewMode}
+        showSkeleton={isInitialLoad || isRefreshing}
+      />
     </div>
   );
 }

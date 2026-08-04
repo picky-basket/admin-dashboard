@@ -29,9 +29,14 @@ type GetDishesResponse = {
   data: Dish[];
 };
 
-export async function getDishes(): Promise<Dish[]> {
+type GetDishesParams = {
+  search?: string;
+  pageSize?: number;
+};
+
+export async function getDishes(params?: GetDishesParams): Promise<Dish[]> {
   const { data } = await productApiClient.get<GetDishesResponse>('/api/v1/dish/list', {
-    params: { pageSize: 100 }
+    params: { pageSize: 100, ...params }
   });
   return data.data;
 }

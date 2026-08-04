@@ -481,13 +481,15 @@
                       "id": "69P0GJRhZOcxagLxVWIJ",
                       "updatedAt": "2026-03-01T23:27:40.931431+00:00",
                       "imageUrl": "https://storage.googleapis.com/picky-basket.firebasestorage.app/uploads/categories/f3caf9b3-65ae-4219-9e69-5adb28717137.jpeg",
-                      "name": "Vegetables"
+                      "name": "Vegetables",
+                      "productCount": 5
                     },
                     {
                       "createdAt": "2026-03-01T21:00:57.595325+00:00",
                       "id": "R3kb8jufWp8GsKTO8J95",
                       "imageUrl": "https://storage.googleapis.com/picky-basket.firebasestorage.app/uploads/categories/74439ba4-dc85-464c-ada7-bac3d87e7876.jpeg",
-                      "name": "Meat & Poultry"
+                      "name": "Meat & Poultry",
+                      "productCount": 2
                     }
                   ]
                 }
@@ -671,6 +673,24 @@
                     "value": {
                       "status": "Failed",
                       "message": "Image file size exceeds 2MB limit."
+                    }
+                  },
+                  "Stock Threshold Required": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Stock threshold is required when stock quantity is provided."
+                    }
+                  },
+                  "Negative Stock Quantity": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Stock quantity cannot be negative."
+                    }
+                  },
+                  "Negative Stock Threshold": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Stock threshold cannot be negative."
                     }
                   }
                 }
@@ -1040,153 +1060,6 @@
         }
       }
     },
-    "/api/v1/product/inventory/{productId}/update": {
-      "patch": {
-        "tags": [
-          "Product"
-        ],
-        "summary": "Update Inventory Stock",
-        "operationId": "update_inventory_stock_api_v1_product_inventory__productId__update_patch",
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "productId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Productid"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/StockUpdateRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessResponse"
-                },
-                "example": {
-                  "status": "Success",
-                  "message": "Stock updated successfully."
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/json": {
-                "example": {
-                  "status": "Failed",
-                  "message": "'stockQuantity' is required."
-                },
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "examples": {
-                  "Unauthorized": {
-                    "value": {
-                      "status": "Failed",
-                      "message": "Invalid credentials."
-                    }
-                  },
-                  "Expired Token": {
-                    "value": {
-                      "status": "Failed",
-                      "message": "Refresh token is invalid or expired."
-                    }
-                  },
-                  "Not authenticated": {
-                    "value": {
-                      "status": "Failed",
-                      "message": "Not authenticated"
-                    }
-                  }
-                },
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "application/json": {
-                "example": {
-                  "status": "Failed",
-                  "message": "Access denied."
-                },
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "application/json": {
-                "example": {
-                  "status": "Failed",
-                  "message": "Inventory not found."
-                },
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "example": {
-                  "status": "Failed",
-                  "message": "Failed to update inventory."
-                },
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/v1/products": {
       "get": {
         "tags": [
@@ -1286,6 +1159,24 @@
               "title": "Tags"
             },
             "description": "Filter by comm-separated tags"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Search by product name or category name",
+              "title": "Search"
+            },
+            "description": "Search by product name or category name"
           },
           {
             "name": "sort_by",
@@ -1914,6 +1805,24 @@
         "operationId": "get_dishes_api_v1_dish_list_get",
         "parameters": [
           {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Search by dish name, category or tags",
+              "title": "Search"
+            },
+            "description": "Search by dish name, category or tags"
+          },
+          {
             "name": "pageSize",
             "in": "query",
             "required": false,
@@ -2239,6 +2148,17 @@
             ],
             "title": "Stockquantity"
           },
+          "stockThreshold": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stockthreshold"
+          },
           "tags": {
             "anyOf": [
               {
@@ -2370,6 +2290,28 @@
               }
             ],
             "title": "Categoryid"
+          },
+          "stockQuantity": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stockquantity"
+          },
+          "stockThreshold": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stockthreshold"
           },
           "tags": {
             "anyOf": [
@@ -2520,21 +2462,6 @@
         },
         "type": "object",
         "title": "HTTPValidationError"
-      },
-      "StockUpdateRequest": {
-        "properties": {
-          "stockQuantity": {
-            "type": "integer",
-            "minimum": 0,
-            "title": "Stockquantity",
-            "description": "Stock quantity."
-          }
-        },
-        "type": "object",
-        "required": [
-          "stockQuantity"
-        ],
-        "title": "StockUpdateRequest"
       },
       "SuccessResponse": {
         "properties": {

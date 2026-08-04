@@ -25,6 +25,7 @@ export type Category = {
   name: string;
   imageUrl?: string;
   image?: string; // for local use
+  productCount?: number;
   createdAt?: string;
   updatedAt?: string;
 };

@@ -37,7 +37,7 @@ const readFileAsDataUrl = (file) =>
     reader.readAsDataURL(file);
   });
 
-function CategoriesExtracted({ categories, setCategories, products, search, setSearch }) {
+function CategoriesExtracted({ categories, setCategories, search, setSearch }) {
   const T = useT();
   const { isMobile } = useBreakpoint();
   const [open, setOpen] = useState(false);
@@ -128,7 +128,7 @@ function CategoriesExtracted({ categories, setCategories, products, search, setS
   };
 
   const requestRemove = (category) => {
-    if (products.find((p) => p.catId === category.id)) {
+    if ((category.productCount ?? 0) > 0) {
       window.alert('Remove all products in this category first.');
       return;
     }
@@ -173,7 +173,7 @@ function CategoriesExtracted({ categories, setCategories, products, search, setS
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(auto-fill,minmax(190px,1fr))', gap: 12 }}>
           {shown.map((c) => {
-            const count = products.filter((p) => p.catId === c.id).length;
+            const count = c.productCount ?? 0;
             return (
               <Card key={c.id} style={{ position: 'relative', overflow: 'hidden', padding: 14 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginTop: 4 }}>
@@ -279,7 +279,7 @@ function CategoriesGridSkeleton() {
 }
 
 export default function CategoriesPage() {
-  const { categories, setCategories, products, categoriesView, setCategoriesView } = useAppStore();
+  const { categories, setCategories, categoriesView, setCategoriesView } = useAppStore();
   const { data: categoriesData, isLoading, isFetching, error } = useCategories();
 
   useEffect(() => {
@@ -320,7 +320,6 @@ export default function CategoriesPage() {
         <CategoriesExtracted
           categories={categories}
           setCategories={setCategories}
-          products={products}
           search={search}
           setSearch={setSearch}
         />
