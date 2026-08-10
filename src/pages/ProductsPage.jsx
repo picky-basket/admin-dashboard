@@ -77,9 +77,13 @@ function ProductsExtracted({
       return;
     }
 
+    const stockValue = f.stock === '' ? undefined : Number.parseInt(f.stock, 10);
+    const stockThreshold = stockValue !== undefined ? Math.max(0, stockValue) : undefined;
+
     try {
       let imageUrl = editing?.image || editing?.imageUrl || '';
 
+      console.log({f,stockValue,stockThreshold});
       if (pickedFile) {
         const contentType = pickedFile.type === 'image/png' ? 'image/png' : 'image/jpeg';
         const uploadMeta = await getUploadUrl('product_image', contentType);
@@ -94,7 +98,8 @@ function ProductsExtracted({
             categoryId: f.catId,
             imagePath: uploadMeta.imagePath,
             description: f.description || undefined,
-            stockQuantity: parseInt(f.stock, 10) || undefined
+            stockQuantity: stockValue,
+            stockThreshold
           });
         } else {
           await updateProductMutation({
@@ -105,7 +110,9 @@ function ProductsExtracted({
               unit: f.unit,
               categoryId: f.catId,
               imagePath: uploadMeta.imagePath,
-              description: f.description || undefined
+              description: f.description || undefined,
+              stockQuantity: stockValue,
+              stockThreshold
             }
           });
         }
@@ -117,7 +124,9 @@ function ProductsExtracted({
             price: parseFloat(f.price),
             unit: f.unit,
             categoryId: f.catId,
-            description: f.description || undefined
+            description: f.description || undefined,
+            stockQuantity: stockValue,
+            stockThreshold
           }
         });
       }
@@ -125,7 +134,7 @@ function ProductsExtracted({
       const prod = {
         ...f,
         price: parseFloat(f.price),
-        stock: parseInt(f.stock, 10) || 0,
+        stock: stockValue ?? 0,
         image: imageUrl,
         imageUrl,
         catId: f.catId,
