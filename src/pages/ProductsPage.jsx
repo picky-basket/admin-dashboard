@@ -54,7 +54,7 @@ function ProductsExtracted({
   const [preview, setPreview] = useState(null);
   const [pickedFile, setPickedFile] = useState(null);
   const fileRef = useRef();
-  const blank = { name: '', catId: '', price: '', unit: 'kg', stock: '', description: '' };
+  const blank = { name: '', catId: '', price: '', unit: 'kg', stock: '', stockThreshold: '', description: '' };
   const [f, setF] = useState(blank);
   const { mutateAsync: addProductMutation, isPending: isAddingProduct } = useAddProduct();
   const { mutateAsync: updateProductMutation, isPending: isUpdatingProduct } = useUpdateProduct();
@@ -77,13 +77,27 @@ function ProductsExtracted({
       return;
     }
 
-    const stockValue = f.stock === '' ? undefined : Number.parseInt(f.stock, 10);
-    const stockThreshold = stockValue !== undefined ? Math.max(0, stockValue) : undefined;
+    const stockValue = f.stock === '' ? undefined : Number(f.stock);
+    const stockThreshold = f.stockThreshold === '' ? undefined : Number(f.stockThreshold);
+
+    if (stockValue !== undefined && (!Number.isInteger(stockValue) || stockValue < 0)) {
+      window.alert('Stock quantity must be a non-negative whole number.');
+      return;
+    }
+
+    if (stockThreshold !== undefined && (!Number.isInteger(stockThreshold) || stockThreshold < 0)) {
+      window.alert('Stock threshold must be a non-negative whole number.');
+      return;
+    }
+
+    if (stockValue !== undefined && stockThreshold === undefined) {
+      window.alert('Enter a stock threshold when setting stock quantity.');
+      return;
+    }
 
     try {
       let imageUrl = editing?.image || editing?.imageUrl || '';
 
-      console.log({f,stockValue,stockThreshold});
       if (pickedFile) {
         const contentType = pickedFile.type === 'image/png' ? 'image/png' : 'image/jpeg';
         const uploadMeta = await getUploadUrl('product_image', contentType);
@@ -135,6 +149,8 @@ function ProductsExtracted({
         ...f,
         price: parseFloat(f.price),
         stock: stockValue ?? 0,
+        stockQuantity: stockValue,
+        stockThreshold: stockThreshold ?? editing?.stockThreshold,
         image: imageUrl,
         imageUrl,
         catId: f.catId,
@@ -156,7 +172,15 @@ function ProductsExtracted({
   };
 
   const edit = (p) => {
-    setF({ name: p.name, catId: p.catId, price: p.price, unit: p.unit, stock: p.stock, description: p.description || '' });
+    setF({
+      name: p.name,
+      catId: p.catId,
+      price: p.price,
+      unit: p.unit,
+      stock: String(p.stockQuantity ?? p.stock ?? ''),
+      stockThreshold: p.stockThreshold == null ? '' : String(p.stockThreshold),
+      description: p.description || ''
+    });
     setPreview(p.image || p.imageUrl || null);
     setPickedFile(null);
     setEdit(p);
@@ -265,7 +289,8 @@ function ProductsExtracted({
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontWeight: 600, color: T.text }}>{p.name}</div>
-                    <div style={{ fontSize: 11, color: T.muted }}>{c?.name} · per {p.unit}</div>
+                    <div style={{ fontSize: 11, color: T.muted }}>{c?.name} · per {p.unit} · Qty {p.stock}</div>
+                    <div style={{ fontSize: 11, color: T.muted }}>Alert threshold: {p.stockThreshold ?? '-'}</div>
                   </div>
                   <Tag s={sl} />
                   <div style={{ fontWeight: 700, color: T.teal }}>GHS {p.price}</div>
@@ -284,7 +309,8 @@ function ProductsExtracted({
                 </div>
                 <div style={{ padding: '10px 12px' }}>
                   <div style={{ fontWeight: 700, fontSize: isMobile ? 12 : 13, color: T.text }}>{p.name}</div>
-                  <div style={{ fontSize: 11, color: T.muted, marginTop: 1, marginBottom: 6, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{c?.name || '-'} · {p.unit}</div>
+                  <div style={{ fontSize: 11, color: T.muted, marginTop: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{c?.name || '-'} · {p.unit}</div>
+                  <div style={{ fontSize: 11, color: T.muted, marginBottom: 6 }}>Alert at {p.stockThreshold ?? '-'}</div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
                     <span style={{ fontSize: 16, fontWeight: 800, color: T.teal }}>GHS {p.price}</span>
                     <span style={{ fontSize: 11, color: T.muted }}>×<b style={{ color: p.stock <= 5 ? T.red : T.text }}>{p.stock}</b></span>
@@ -330,6 +356,7 @@ function ProductsExtracted({
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
             <Field label="Price" value={f.price} onChange={(v) => setF((x) => ({ ...x, price: v }))} type="number" placeholder="0.00" required />
             <Field label="Stock Qty" value={f.stock} onChange={(v) => setF((x) => ({ ...x, stock: v }))} type="number" placeholder="0" />
+            <Field label="Stock Threshold" value={f.stockThreshold} onChange={(v) => setF((x) => ({ ...x, stockThreshold: v }))} type="number" placeholder="0" required={f.stock !== ''} />
           </div>
           <Field label="Description" value={f.description} onChange={(v) => setF((x) => ({ ...x, description: v }))} placeholder="Short description" rows={2} />
           <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 6 }}>
@@ -455,7 +482,7 @@ export default function ProductsPage() {
       const normalized = productsData.map((p) => ({
         ...p,
         catId: p.categoryId,
-        stock: p.isAvailable ? 10 : 0, // API doesn't have stock, use availability as proxy
+        stock: p.stockQuantity ?? (p.isAvailable ? 10 : 0),
         image: p.imageUrl,
         id: p.id || p.productId
       }));

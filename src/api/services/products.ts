@@ -13,6 +13,8 @@ export type Product = {
   categoryName?: string;
   catId?: string; // for local use
   isAvailable?: boolean;
+  stockQuantity?: number | null;
+  stockThreshold?: number | null;
   stock?: number; // for local use
   currency?: string;
   tags?: string[];
