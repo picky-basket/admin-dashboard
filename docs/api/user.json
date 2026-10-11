@@ -669,6 +669,24 @@
                       "status": "Failed",
                       "message": "Invalid ghanapostCode format."
                     }
+                  },
+                  "Invalid longitude": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Longitude must be between -180 and 180."
+                    }
+                  },
+                  "Invalid latitude": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Latitude must be between -90 and 90."
+                    }
+                  },
+                  "Address outside delivery radius": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Address is outside delivery radius."
+                    }
                   }
                 },
                 "schema": {
@@ -818,6 +836,30 @@
                     "value": {
                       "status": "Failed",
                       "message": "Invalid ghanapostCode format."
+                    }
+                  },
+                  "Invalid longitude": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Longitude must be between -180 and 180."
+                    }
+                  },
+                  "Invalid latitude": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Latitude must be between -90 and 90."
+                    }
+                  },
+                  "Both latitude and longitude must be provided": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Both latitude and longitude must be provided."
+                    }
+                  },
+                  "Address outside delivery radius": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Address is outside delivery radius."
                     }
                   }
                 },
@@ -1194,6 +1236,173 @@
         }
       }
     },
+    "/api/v1/user/{userId}/delivery-fee": {
+      "get": {
+        "tags": [
+          "Delivery Fee"
+        ],
+        "summary": "Calculate Delivery Fee",
+        "operationId": "calculate_delivery_fee_api_v1_user__userId__delivery_fee_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Userid"
+            }
+          },
+          {
+            "name": "addressId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Addressid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "Success": {
+                    "value": {
+                      "status": "Success",
+                      "data": {
+                        "deliveryFee": 5,
+                        "distanceKm": 2.5
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Address outside delivery radius": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Selected address is outside the delivery radius."
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Unauthorized": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Invalid credentials."
+                    }
+                  },
+                  "Expired Token": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Refresh token is invalid or expired."
+                    }
+                  },
+                  "Not authenticated": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Not authenticated"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "Failed",
+                  "message": "Access denied."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Address Not Found": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Shipping address not found."
+                    }
+                  },
+                  "Invalid Coordinates": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Selected address has invalid coordinates."
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "Failed",
+                  "message": "Failed to calculate delivery fee."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/user/{userId}/fcm/token": {
       "post": {
         "tags": [
@@ -1217,6 +1426,16 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveFCMTokenRequest"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Success",
@@ -2304,25 +2523,11 @@
             "title": "Recipientphonenumber"
           },
           "longitude": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
+            "type": "number",
             "title": "Longitude"
           },
           "latitude": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
+            "type": "number",
             "title": "Latitude"
           },
           "isDefault": {
@@ -2346,7 +2551,9 @@
           "state",
           "country",
           "recipientName",
-          "recipientPhoneNumber"
+          "recipientPhoneNumber",
+          "longitude",
+          "latitude"
         ],
         "title": "AddressCreate"
       },
@@ -2485,6 +2692,33 @@
         },
         "type": "object",
         "title": "HTTPValidationError"
+      },
+      "SaveFCMTokenRequest": {
+        "properties": {
+          "fcmToken": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Fcmtoken"
+          },
+          "platform": {
+            "type": "string",
+            "enum": [
+              "android",
+              "ios"
+            ],
+            "title": "Platform"
+          }
+        },
+        "type": "object",
+        "required": [
+          "fcmToken",
+          "platform"
+        ],
+        "title": "SaveFCMTokenRequest",
+        "example": {
+          "fcmToken": "fcm_token_here",
+          "platform": "android"
+        }
       },
       "SuccessResponse": {
         "properties": {

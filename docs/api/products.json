@@ -1023,7 +1023,9 @@
                     "createdAt": "2026-03-05T18:31:38.988847+00:00",
                     "categoryName": "Meat & Poultry",
                     "name": "Chicken Thighs",
-                    "id": "6YUZmN3n4hCyrILAGMtZ"
+                    "id": "6YUZmN3n4hCyrILAGMtZ",
+                    "stockQuantity": 0,
+                    "stockThreshold": 0
                   }
                 }
               }
@@ -1279,7 +1281,9 @@
                         ],
                         "categoryName": "Meat & Poultry",
                         "name": "Beef",
-                        "id": "Iq6JHmAn8vsj0c8Flffx"
+                        "id": "Iq6JHmAn8vsj0c8Flffx",
+                        "stockQuantity": 0,
+                        "stockThreshold": 0
                       },
                       {
                         "price": 25,
@@ -1297,7 +1301,9 @@
                         ],
                         "categoryName": "Fruits",
                         "name": "Watermelon",
-                        "id": "V8eMV22siK1b2DGpZivq"
+                        "id": "V8eMV22siK1b2DGpZivq",
+                        "stockQuantity": 0,
+                        "stockThreshold": 0
                       },
                       {
                         "price": 100,
@@ -1318,7 +1324,9 @@
                         "createdAt": "2026-03-05T18:31:38.988847+00:00",
                         "categoryName": "Meat & Poultry",
                         "name": "Chicken Thighs",
-                        "id": "6YUZmN3n4hCyrILAGMtZ"
+                        "id": "6YUZmN3n4hCyrILAGMtZ",
+                        "stockQuantity": 0,
+                        "stockThreshold": 0
                       }
                     ],
                     "pagination": {

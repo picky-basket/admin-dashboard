@@ -854,6 +854,7 @@
                         "currency": "GHS",
                         "itemCount": 1,
                         "paymentStatus": "pending",
+                        "deliveryFee": 10,
                         "shippingAddress": {
                           "streetAddress": "D82 Wuoleiatse O Kofi III St",
                           "ghanapostCode": "GS-0706-8463",
@@ -890,6 +891,54 @@
                     "value": {
                       "status": "Failed",
                       "message": "Product 'Beef' is out of stock."
+                    }
+                  },
+                  "Cart Empty": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Cart is empty."
+                    }
+                  },
+                  "No Shipping Address": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "No shipping address provided."
+                    }
+                  },
+                  "Out of stock": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Product 'Beef' is out of stock."
+                    }
+                  },
+                  "Insufficient stock": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Insufficient stock for product 'Beef'. Available: 5, Requested: 10"
+                    }
+                  },
+                  "Invalid coordinates": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Selected address has invalid coordinates."
+                    }
+                  },
+                  "Invalid latitude": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Selected address has invalid latitude."
+                    }
+                  },
+                  "Invalid longitude": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Selected address has invalid longitude."
+                    }
+                  },
+                  "Outside delivery radius": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Selected address is outside the delivery radius."
                     }
                   }
                 }
@@ -960,16 +1009,16 @@
                       "message": "Product not found."
                     }
                   },
-                  "Inventory Not Found": {
-                    "value": {
-                      "status": "Failed",
-                      "message": "Inventory record not found."
-                    }
-                  },
                   "Product Inventory Record Not Found": {
                     "value": {
                       "status": "Failed",
                       "message": "Inventory record for product 'Beef' not found."
+                    }
+                  },
+                  "No warehouses found": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "No warehouses configured."
                     }
                   }
                 }
@@ -1250,6 +1299,8 @@
 
                             },
                             "total": 200,
+                            "subtotal": 180,
+                            "tax": 20,
                             "currency": "GHS",
                             "itemCount": 1,
                             "items": [
@@ -1291,6 +1342,8 @@
 
                             },
                             "total": 150,
+                            "subtotal": 130,
+                            "tax": 20,
                             "currency": "GHS",
                             "itemCount": 2,
                             "items": [
@@ -1344,6 +1397,8 @@
 
                             },
                             "total": 25,
+                            "subtotal": 20,
+                            "tax": 5,
                             "currency": "GHS",
                             "itemCount": 1,
                             "items": [
@@ -1386,6 +1441,8 @@
 
                             },
                             "total": 2750,
+                            "subtotal": 2500,
+                            "tax": 250,
                             "currency": "GHS",
                             "itemCount": 2,
                             "items": [
@@ -1708,6 +1765,161 @@
         }
       }
     },
+    "/api/v1/order/{orderId}/cancel": {
+      "patch": {
+        "tags": [
+          "Orders"
+        ],
+        "summary": "Cancel Order",
+        "operationId": "cancel_order_api_v1_order__orderId__cancel_patch",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Orderid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderCancel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "example": {
+                  "status": "success",
+                  "message": "Order cancelled successfully."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Order Already Cancelled": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Order is already cancelled."
+                    }
+                  },
+                  "Order Already Delivered": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Order is already delivered."
+                    }
+                  },
+                  "Order Already Shipped": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Order is already shipped."
+                    }
+                  },
+                  "Order Already Refunded": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Order is already refunded."
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Unauthorized": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Invalid credentials."
+                    }
+                  },
+                  "Expired Token": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Refresh token is invalid or expired."
+                    }
+                  },
+                  "Not authenticated": {
+                    "value": {
+                      "status": "Failed",
+                      "message": "Not authenticated"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "Failed",
+                  "message": "Access denied."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "Failed",
+                  "message": "Failed to cancel order."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/order/{orderId}/status": {
       "patch": {
         "tags": [
@@ -1846,6 +2058,26 @@
         },
         "type": "object",
         "title": "HTTPValidationError"
+      },
+      "OrderCancel": {
+        "properties": {
+          "cancellationReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cancellationreason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "cancellationReason"
+        ],
+        "title": "OrderCancel"
       },
       "OrderStatusEnum": {
         "type": "string",
