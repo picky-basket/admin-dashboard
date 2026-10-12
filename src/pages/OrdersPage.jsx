@@ -17,6 +17,18 @@ function useT() {
   return useExtractedTheme();
 }
 
+function formatPlacedTime(value) {
+  if (!value) return '-';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+
+  return new Intl.DateTimeFormat('en-GH', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+    timeZone: 'Africa/Accra'
+  }).format(date);
+}
+
 const STATUS_TO_API = {
   Pending: 'pending',
   Confirmed: 'confirmed',
@@ -125,7 +137,7 @@ function OrdersExtracted({ orders, setOrders, search, setSearch, sortBy, setSort
                 </div>
                 <div style={{ textAlign: 'right' }}>
                   <Tag s={o.status} />
-                  <div style={{ fontWeight: 700, fontSize: 16, color: T.text, marginTop: 4 }}>GHS {o.subtotal + o.fee}</div>
+                  <div style={{ fontWeight: 700, fontSize: 16, color: T.text, marginTop: 4 }}>GHS {o.total}</div>
                 </div>
               </div>
               <div style={{ display: 'flex', gap: 8, marginTop: 10 }}>
@@ -159,7 +171,7 @@ function OrdersExtracted({ orders, setOrders, search, setSearch, sortBy, setSort
                       <div style={{ fontSize: 11, color: T.muted }}>{o.phone}</div>
                     </td>
                     <td style={{ padding: '10px 14px', color: T.muted, fontSize: 12 }}>{o.items.length} item{o.items.length !== 1 ? 's' : ''}</td>
-                    <td style={{ padding: '10px 14px', fontWeight: 700, color: T.text }}>GHS {o.subtotal + o.fee}</td>
+                    <td style={{ padding: '10px 14px', fontWeight: 700, color: T.text }}>GHS {o.total}</td>
                     <td style={{ padding: '10px 14px' }}><Tag s={o.status} /></td>
                     <td style={{ padding: '10px 14px' }}>
                       <div style={{ fontSize: 12, color: o.paid ? T.green : T.red, fontWeight: 700 }}>{o.paid ? '✓ Paid' : '✗ Unpaid'}</div>
@@ -185,7 +197,7 @@ function OrdersExtracted({ orders, setOrders, search, setSearch, sortBy, setSort
       {open ? (
         <Modal title={`Order ${open.orderNumber || open.id}`} onClose={() => setOpen(null)} w={520}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 14 }}>
-            {[['Customer', open.customer], ['Phone', open.phone], ['Address', open.address], ['Placed', open.time], ['Payment', open.method], ['Paid', open.paid ? '✓ Yes' : '✗ No']].map(([l, v]) => (
+            {[['Customer', open.customer], ['Phone', open.phone], ['Address', open.address], ['Placed', formatPlacedTime(open.time)], ['Payment', open.method], ['Paid', open.paid ? '✓ Yes' : '✗ No']].map(([l, v]) => (
               <div key={l} style={{ background: T.bgAlt, borderRadius: 9, padding: '9px 12px' }}>
                 <div style={{ fontSize: 10, fontWeight: 700, color: T.muted, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 2 }}>{l}</div>
                 <div style={{ fontSize: 13, fontWeight: 600, color: l === 'Paid' ? (open.paid ? T.green : T.red) : T.text }}>{v}</div>
@@ -201,9 +213,9 @@ function OrdersExtracted({ orders, setOrders, search, setSearch, sortBy, setSort
               </div>
             ))}
             <div style={{ display: 'flex', justifyContent: 'space-between', padding: '7px 0 0', fontSize: 12, color: T.muted }}><span>Subtotal</span><span>GHS {open.subtotal}</span></div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '5px 0', fontSize: 12, color: T.muted }}><span>Delivery fee</span><span>GHS {open.fee}</span></div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '5px 0', fontSize: 12, color: T.muted }}><span>Delivery fee</span><span>GHS {open.deliveryFee}</span></div>
             <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0 0', borderTop: `1px solid ${T.border}`, marginTop: 4, fontWeight: 800, fontSize: 15, color: T.text }}>
-              <span>Total</span><span style={{ color: T.teal }}>GHS {open.subtotal + open.fee}</span>
+              <span>Total</span><span style={{ color: T.teal }}>GHS {open.total}</span>
             </div>
           </div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
@@ -355,6 +367,11 @@ export default function OrdersPage() {
           cancelled: 'Cancelled',
           refunded: 'Refunded'
         };
+        const subtotal = o.subtotal ?? (o.items || []).reduce(
+          (sum, item) => sum + (item.totalPrice ?? ((item.unitPrice ?? 0) * (item.quantity ?? 0))),
+          0
+        );
+        const deliveryFee = o.deliveryFee ?? 0;
         return {
           ...o,
           id: o.orderId,
@@ -365,8 +382,10 @@ export default function OrdersPage() {
           status: statusMap[o.status] || 'Pending',
           paid: o.paymentStatus === 'paid',
           method: o.paymentMethod || 'Unknown',
-          subtotal: Math.round((o.total || 0) * 0.95), // Estimate subtotal (80% of total for fee calculation)
-          fee: Math.round((o.total || 0) * 0.05), // Estimate fee (20% of total)
+          subtotal,
+          deliveryFee,
+          fee: deliveryFee,
+          total: o.total ?? o.totalAmount ?? (subtotal + deliveryFee),
           items: (o.items || []).map((item) => ({
             ...item,
             name: item.productName || item.name || 'Item',

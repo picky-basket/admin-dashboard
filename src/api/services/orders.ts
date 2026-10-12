@@ -35,7 +35,10 @@ export type Order = {
   status: 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'refunded';
   paymentStatus?: 'pending' | 'paid' | 'failed';
   paymentMethod?: string;
-  total: number;
+  subtotal?: number;
+  deliveryFee?: number;
+  total?: number;
+  totalAmount?: number;
   currency?: string;
   itemCount: number;
   items: OrderItem[];
@@ -48,7 +51,6 @@ export type Order = {
   id?: string;
   customer?: string;
   phone?: string;
-  subtotal?: number;
   fee?: number;
   paid?: boolean;
   method?: string;
